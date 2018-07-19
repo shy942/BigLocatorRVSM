@@ -42,7 +42,7 @@ public class RVSMCalc {
 	protected void calculatRVSM() {
 	
 
-		HashMap<String, Double> ddfMap=retrieveDocumentFrequency();
+		//HashMap<String, Double> ddfMap=retrieveDocumentFrequency();
 		//utility.MiscUtility.showResult(100, ddfMap);
 		
 		
@@ -73,11 +73,11 @@ public class RVSMCalc {
 		    File[] sourceCodeFiles = new File(this.sourceCodeDir).listFiles();
 			System.out.println("Total number of source code files: "+sourceCodeFiles.length);
 			int noOfTotalDocument=sourceCodeFiles.length;
-			for (File sourceCodeFile : sourceCodeFiles) {
-				String sourceCodeContent = ContentLoader.readContentProcessedSourceCode(sourceCodeFile
-					.getAbsolutePath());
+			//for (File sourceCodeFile : sourceCodeFiles) {
+				//String sourceCodeContent = ContentLoader.readContentProcessedSourceCode(sourceCodeFile
+					//.getAbsolutePath());
 				//String acrualFilePath=ContentLoader.returnFilePath(sourceCodeFile.getAbsolutePath());
-				String acrualFilePath=ContentLoader.extractFileAddress(sourceCodeFile.getAbsolutePath());
+				//String acrualFilePath=ContentLoader.extractFileAddress(sourceCodeFile.getAbsolutePath());
 				//System.out.println("acrualFilePath	"+acrualFilePath);
 			
 				VSMCalculator vcalc2 = new VSMCalculator(sourceCodeContent);
@@ -110,7 +110,7 @@ public class RVSMCalc {
 					this.hm.put(acrualFilePath, score);
 				}
 			
-			}
+			//}
 			HashMap<String, Double> sortedResult=retrieveSortedTopNResult(hm);
 			
 			ArrayList<String> tempResults=new ArrayList<String>();

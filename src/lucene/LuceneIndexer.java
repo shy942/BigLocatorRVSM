@@ -10,6 +10,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
@@ -84,13 +85,10 @@ public class LuceneIndexer {
 
 		try {
 			Analyzer analyzer = new StandardAnalyzer();
-			
-			
 			FSDirectory dir = FSDirectory.open(new File(indexDir).toPath());
 
 			IndexReader indexReader;
 			indexReader=DirectoryReader.open(dir);
-			
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			
@@ -99,7 +97,7 @@ public class LuceneIndexer {
 					analyzer);
 			Query query = qp.parse(searchString); // parse the query and construct the Query object
 
-			TopDocs hits = searcher.search(query,100); // run the query
+			TopDocs hits = searcher.search(query, 10); // run the query
 			System.out.println("Found: " + hits.totalHits);
 			
             int i=0;
@@ -123,8 +121,8 @@ public class LuceneIndexer {
 		
 		String indexFolder="./Data/Index";
 		String docFolder="/Users/user/Documents/Backup/ProcessedFiles/";
-		//new LuceneIndexer(docFolder, indexFolder).createIndex();
-		new LuceneIndexer(docFolder, indexFolder).searchIndex("bind");
+		new LuceneIndexer(docFolder, indexFolder).createIndex();
+		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind");
 		
 	}
 
