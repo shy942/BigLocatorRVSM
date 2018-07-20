@@ -68,8 +68,8 @@ public class LuceneIndexer {
 			FileReader fr = new FileReader(file);
 			
 			doc.add(new TextField("contents", fr));
-			doc.add(new StringField("path", file.getPath(), Field.Store.YES));
-			doc.add(new StringField("filename", file.getName(), Field.Store.YES));
+			//doc.add(new StringField("path", file.getPath(), Field.Store.YES));
+			//doc.add(new StringField("filename", file.getName(), Field.Store.YES));
 
 			indexWriter.addDocument(doc);
 			System.out.println("Added: " + file.getName());
@@ -120,7 +120,7 @@ public class LuceneIndexer {
 		
 		
 		String indexFolder="./Data/Index";
-		String docFolder="/Users/user/Documents/Backup/ProcessedFiles/";
+		String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
 		new LuceneIndexer(docFolder, indexFolder).createIndex();
 		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind");
 		

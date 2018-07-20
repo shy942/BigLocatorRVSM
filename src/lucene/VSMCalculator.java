@@ -10,6 +10,8 @@ public class VSMCalculator {
 	String content;
 	BugReportPreprocessor bpp;
 	HashMap<String, Integer> tfMap = new HashMap<String, Integer>();
+	
+	
 	//int year = 2011;
 	int totalTerms=0;
 
@@ -21,7 +23,7 @@ public class VSMCalculator {
 
 	public  HashMap<String, Integer> getTF() {
 		String preprocessed = bpp.performNLP();
-		String[] words = preprocessed.split(",");
+		String[] words = preprocessed.split(" ");
 		for (String token : words) {
 			this.totalTerms++;
 			if (tfMap.containsKey(token)) {
@@ -33,6 +35,19 @@ public class VSMCalculator {
 		}
 		//System.out.println("From VSMCalculator: "+totalTerms);
 		return tfMap;
+	}
+	
+	public HashMap<String, Double> getLogTF()
+	{
+		HashMap<String, Double> logTFmap=new HashMap<>();
+		this.tfMap=this.getTF();
+		for(String key: tfMap.keySet())
+		{
+			int tf=tfMap.get(key);
+			Double logTF=Math.log(Double.valueOf(tf))+1;
+			logTFmap.put(key, logTF);
+		}
+		return logTFmap;
 	}
 
 	public int getTotalNoTerms(){

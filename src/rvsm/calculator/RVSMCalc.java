@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.rmi.CORBA.Util;
 
+import lucene.TFIDFCalculator;
 import lucene.VSMCalculator;
 import utility.ContentLoader;
 import utility.ContentWriter;
@@ -17,34 +18,66 @@ import utility.MiscUtility;
 
 public class RVSMCalc {
 
-	String queryFile;
-	String queryContent;
-	int year=2011;
-	String queryDir;
-	String sourceCodeDir;
-	static HashMap hm=new HashMap();
-
+	
+	
+	
+	
+	HashMap<String, Double> IDFmap;
+	HashMap<String, HashMap<String, Double>> SourceTFInfo;
+	HashMap<String, String> QueryInfo;
+    
 	public RVSMCalc() {
-		this.queryDir = "-Query-Preprocessed";
-		this.sourceCodeDir="ProcessedFiles";
-		this.hm=hm;
+		
+		
+		this.IDFmap=new HashMap<>();
+		this.SourceTFInfo=new HashMap<>();
+		this.QueryInfo=new HashMap<>();
 	}
 
-	private ArrayList<String> LoadAllAcceptedBugs( String consideredQueryFile ) {
-		// TODO Auto-generated method stub
-		ArrayList<String> allAcceptedBugs;
-		allAcceptedBugs=ContentLoader.readContent(consideredQueryFile);
-		return allAcceptedBugs;
+	
+	public void LoadSourceTFhm(String SourceCodeDir)
+	{
+		File[] sourceCodeFiles = new File(SourceCodeDir).listFiles();
+		System.out.println("Total number of source code files: "+sourceCodeFiles.length);
+		int noOfTotalDocument=sourceCodeFiles.length;
+		
+		for (File sourceCodeFile : sourceCodeFiles) {
+			String sourceCodeContent = ContentLoader.readContentSimple(sourceCodeFile
+				.getAbsolutePath());
+			VSMCalculator objVSMCalc =new VSMCalculator(sourceCodeContent);
+			HashMap<String, Double> logTF=objVSMCalc.getLogTF();
+			this.SourceTFInfo.put(sourceCodeFile.getName(), logTF);
+			
+		}
+		//MiscUtility.showResult(10, this.SourceTFInfo);
 	}
 	
+	public void LoadSourceIDF()
+	{
+		TFIDFCalculator objTFIDFCalc=new TFIDFCalculator();
+		this.IDFmap=objTFIDFCalc.calculateIDFOnly();
+		//MiscUtility.showResult(10, this.IDFmap);
+	}
+	
+	public void LoadQueryInfo(String queryFolder)
+	{
+		File[] queryFiles = new File(queryFolder).listFiles();
+		System.out.println("Total number of quiries: "+queryFiles.length);
+		int noOfTotalDocument=queryFiles.length;
+		
+		for (File queryFile : queryFiles) {
+			String queryContent = ContentLoader.readContentSimple(queryFile
+					.getAbsolutePath());
+			this.QueryInfo.put(queryFile.getName(), queryContent);
+		}
+		MiscUtility.showResult(10, this.QueryInfo);
+	}
 	
 	
 	protected void calculatRVSM() {
 	
 
-		//HashMap<String, Double> ddfMap=retrieveDocumentFrequency();
-		//utility.MiscUtility.showResult(100, ddfMap);
-		
+		/*
 		
 		String getMaxMin=retrieveMaxMinLength();
 		String[] spilter=getMaxMin.split(",");
@@ -53,16 +86,14 @@ public class RVSMCalc {
 		//System.out.println(maxLength+" "+minLength);
 		
 		int no_of_query_done=0;
-		ArrayList<String> totalResult=new ArrayList<>();
-		File[] queryFiles = new File(this.queryDir).listFiles();
-		System.out.println("Total no. of query: "+queryFiles.length);
-		for(File queryFileSingle : queryFiles){
+		//ArrayList<String> totalResult=new ArrayList<>();
+		//File[] queryFiles = new File(this.queryDir).listFiles();
+		//System.out.println("Total no. of query: "+queryFiles.length);
+		for(String queryFileSingle : this.QueryInfo.keySet()){
 			
-			no_of_query_done++;
-			//if(no_of_query_done>1)break;
-			System.out.println(no_of_query_done+" "+queryFileSingle.getName()+" is started");
-			String queryPath=queryFileSingle.getAbsolutePath();
-			//String BugId=queryFileSingle.getName().substring(0, queryFileSingle.getName().length()-4);
+			
+			
+			Name().length()-4);
 			this.queryContent= ContentLoader.readContentSimple(queryPath);
 			// collect metrics for the query
 		
@@ -131,7 +162,7 @@ public class RVSMCalc {
 		}
 		//return this.hm;
 		
-		ContentWriter.writeContent("F:/BigDataProject/ResultOutput/Oct06resultFor2011.txt", totalResult);
+		ContentWriter.writeContent("F:/BigDataProject/ResultOutput/Oct06resultFor2011.txt", totalResult);*/
 	}
 	
 	public HashMap retrieveSortedTopNResult(HashMap hm)
@@ -263,9 +294,10 @@ public class RVSMCalc {
 		
 	
 		RVSMCalc obj=new RVSMCalc();
-		obj.calculatRVSM();
-		
-	
+		//obj.calculatRVSM();
+		obj.LoadSourceTFhm("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/");
+		obj.LoadSourceIDF();
+		obj.LoadQueryInfo("/Users/user/Documents/Ph.D/2018/Data/QueryData/");
 	}
 
 }

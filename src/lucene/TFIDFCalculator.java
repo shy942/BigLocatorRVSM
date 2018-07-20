@@ -34,11 +34,16 @@ public class TFIDFCalculator {
 	private ArrayList<String> keys;
 	public static String FIELD_CONTENTS = "contents";
 	
+	
+	
+	
+	
 	public TFIDFCalculator(String indexDir) {
 		this.indexDir = indexDir;
 		this.idfMap = new HashMap<String, Double>();
 		this.tfMap = new HashMap<String, Long>();
 		this.dfMap = new HashMap<String, Double>();
+		
 		
 	}
 
