@@ -37,6 +37,11 @@ public class VSMCalculator {
 		return tfMap;
 	}
 	
+	public int getTotalTerms()
+	{
+		return this.totalTerms;
+	}
+	
 	public HashMap<String, Double> getLogTF()
 	{
 		HashMap<String, Double> logTFmap=new HashMap<>();

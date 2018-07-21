@@ -25,18 +25,23 @@ public class RVSMCalc {
 	HashMap<String, Double> IDFmap;
 	HashMap<String, HashMap<String, Double>> SourceTFInfo;
 	HashMap<String, String> QueryInfo;
-    
+	HashMap<String, Double> hm;
+    ArrayList<String> LengthList;
+	
 	public RVSMCalc() {
 		
 		
 		this.IDFmap=new HashMap<>();
 		this.SourceTFInfo=new HashMap<>();
 		this.QueryInfo=new HashMap<>();
+		this.hm=new HashMap<>();
+		this.LengthList=new ArrayList<>();
 	}
 
 	
 	public void LoadSourceTFhm(String SourceCodeDir)
 	{
+		
 		File[] sourceCodeFiles = new File(SourceCodeDir).listFiles();
 		System.out.println("Total number of source code files: "+sourceCodeFiles.length);
 		int noOfTotalDocument=sourceCodeFiles.length;
@@ -46,10 +51,33 @@ public class RVSMCalc {
 				.getAbsolutePath());
 			VSMCalculator objVSMCalc =new VSMCalculator(sourceCodeContent);
 			HashMap<String, Double> logTF=objVSMCalc.getLogTF();
+			this.LengthList.add(String.valueOf(objVSMCalc.getTotalNoTerms()));
 			this.SourceTFInfo.put(sourceCodeFile.getName(), logTF);
 			
 		}
 		//MiscUtility.showResult(10, this.SourceTFInfo);
+	}
+	
+	public Long getMaxLength()
+	{
+		Long MaxLen=(long) 0;
+		for(String len:this.LengthList)
+		{
+			Long lengthInt=Long.valueOf(len);
+			if(MaxLen<lengthInt)MaxLen=lengthInt;
+		}
+		return MaxLen;
+	}
+	
+	public Long getMinLength()
+	{
+		Long MinLen=(long) 100000;
+		for(String len:this.LengthList)
+		{
+			Long lengthInt=Long.valueOf(len);
+			if(MinLen>lengthInt)MinLen=lengthInt;
+		}
+		return MinLen;
 	}
 	
 	public void LoadSourceIDF()
@@ -70,51 +98,38 @@ public class RVSMCalc {
 					.getAbsolutePath());
 			this.QueryInfo.put(queryFile.getName(), queryContent);
 		}
-		MiscUtility.showResult(10, this.QueryInfo);
+		//MiscUtility.showResult(10, this.QueryInfo);
 	}
 	
 	
 	protected void calculatRVSM() {
 	
 
-		/*
 		
-		String getMaxMin=retrieveMaxMinLength();
-		String[] spilter=getMaxMin.split(",");
-		double maxLength=Double.valueOf(spilter[0]);
-		double minLength=Double.valueOf(spilter[1]);
-		//System.out.println(maxLength+" "+minLength);
 		
-		int no_of_query_done=0;
-		//ArrayList<String> totalResult=new ArrayList<>();
-		//File[] queryFiles = new File(this.queryDir).listFiles();
-		//System.out.println("Total no. of query: "+queryFiles.length);
-		for(String queryFileSingle : this.QueryInfo.keySet()){
-			
-			
-			
-			Name().length()-4);
-			this.queryContent= ContentLoader.readContentSimple(queryPath);
+		
+		double maxLength=Double.valueOf(this.getMaxLength());
+		double minLength=Double.valueOf(this.getMinLength());
+		System.out.println(maxLength+" "+minLength);
+		
+		int count=0;
+		ArrayList<String> totalResult=new ArrayList<>();
+		for(String queryInfo : this.QueryInfo.keySet())
+		{
+			count++;
+			//if(count>10) break;
+			String queryContent=this.QueryInfo.get(queryInfo);
 			// collect metrics for the query
 		
-			VSMCalculator vcalc = new VSMCalculator(this.queryContent);
-			HashMap<String, Integer> qtfMap = vcalc.getTF();
+			VSMCalculator vcalc = new VSMCalculator(queryContent);
+			HashMap<String, Double> qtfMap = vcalc.getLogTF();
 			
-			
-		    File[] sourceCodeFiles = new File(this.sourceCodeDir).listFiles();
-			System.out.println("Total number of source code files: "+sourceCodeFiles.length);
-			int noOfTotalDocument=sourceCodeFiles.length;
-			//for (File sourceCodeFile : sourceCodeFiles) {
-				//String sourceCodeContent = ContentLoader.readContentProcessedSourceCode(sourceCodeFile
-					//.getAbsolutePath());
-				//String acrualFilePath=ContentLoader.returnFilePath(sourceCodeFile.getAbsolutePath());
-				//String acrualFilePath=ContentLoader.extractFileAddress(sourceCodeFile.getAbsolutePath());
-				//System.out.println("acrualFilePath	"+acrualFilePath);
-			
-				VSMCalculator vcalc2 = new VSMCalculator(sourceCodeContent);
-				HashMap<String, Integer> dtfMap = vcalc2.getTF();
-				//HashMap<String, Double> ddfMap = vcalc2.getDF();
-				int dTotalTerms=vcalc2.getTotalNoTerms();
+			for (String key : this.SourceTFInfo.keySet()) 
+			{
+				
+				HashMap<String, Double> dtfMap = this.SourceTFInfo.get(key);
+				
+				int dTotalTerms=this.SourceTFInfo.get(key).size();
 			
 				//Calculate Nx
 				double Nx=(dTotalTerms-minLength)/(maxLength-minLength);
@@ -133,36 +148,38 @@ public class RVSMCalc {
 				//Calculating rVSM score
 				if(commonSet.size() > 0)
 				{		
-					double scoreUpperPart=calculateUpperPart(noOfTotalDocument,qtfMap,dtfMap,ddfMap,commonSet);
-					double scooreLowerPart=calculateLowerPart(noOfTotalDocument,qtfMap,dtfMap,ddfMap);
+					double scoreUpperPart=calculateUpperPart(qtfMap,dtfMap,commonSet);
+					double scooreLowerPart=calculateLowerPart(qtfMap,dtfMap);
 					double score=0.0;
 					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(gTerms*scoreUpperPart)/scooreLowerPart;
-				
-					this.hm.put(acrualFilePath, score);
+					//if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(scoreUpperPart)/scooreLowerPart;
+					this.hm.put(key, score);
 				}
 			
-			//}
+			}
 			HashMap<String, Double> sortedResult=retrieveSortedTopNResult(hm);
 			
 			ArrayList<String> tempResults=new ArrayList<String>();
 			int resultCount=0;
-			String resultContent=queryFileSingle.getName().substring(0, queryFileSingle.getName().length()-4);
+			String resultContent=queryInfo+",";
 			for(String srcFile: sortedResult.keySet())
 			{
 				if(!tempResults.contains(srcFile))
 				{
 					tempResults.add(srcFile);
-					resultContent+=":"+srcFile;
+					resultContent+=","+srcFile;
 					resultCount++;
 					if(resultCount>10)break;
 				}
 			}
-			
+			totalResult.add(resultContent);
+			//MiscUtility.showResult(10, sortedResult);
+			System.out.println(count);
 			hm.clear();
 		}
 		//return this.hm;
-		
-		ContentWriter.writeContent("F:/BigDataProject/ResultOutput/Oct06resultFor2011.txt", totalResult);*/
+		System.out.println("Total Query: "+count);
+		ContentWriter.writeContent("./Data/Results/July20-1.txt", totalResult);
 	}
 	
 	public HashMap retrieveSortedTopNResult(HashMap hm)
@@ -174,27 +191,7 @@ public class RVSMCalc {
 	}
 	
 	
-	public HashMap retrieveDocumentFrequency()
-	{
-		HashMap<String, Double> hm=new HashMap<String, Double>();
-		String inFile="DocumentFrequency"+"/"+"1onOct5.txt";
-		
-		String content=utility.ContentLoader.readContentSimple(inFile);
-		String [] spilter=content.split("\n");
-		for(int i=0;i<spilter.length;i++)
-		{
-			String line=spilter[i];
-			String[] spilter2=line.split(",");
-			String key=spilter2[0];
-			Double DFvalue=Double.valueOf(spilter2[1]);
-			if(!hm.containsKey(key))
-			{
-				hm.put(key, DFvalue);
-			}
-		}
-		
-		return hm;
-	}
+	
 	
 	public String retrieveMaxMinLength()
 	{
@@ -204,29 +201,26 @@ public class RVSMCalc {
 		return content;
 	}
 	
-	protected double calculateUpperPart(int noOfTotalDocument, HashMap<String,Integer> qtfMap, HashMap<String,Integer> dtfMap,
-		HashMap<String,Double> ddfMap, HashSet<String> commons)
+	protected double calculateUpperPart(HashMap<String, Double> qtfMap, HashMap<String, Double> dtfMap,
+		 HashSet<String> commons)
 	{
 		double scoreUpperPart=0.0;
 		double sum=0;
 		for(String t:commons){
-			double qTF=(double)qtfMap.get(t);
-			double first=Math.log(qTF)+1;
-			double dTF=(double)dtfMap.get(t);
-			double second=Math.log(dTF)+1;
-			double third=0;
+			double qLogTF=qtfMap.get(t);
 			
-			if(ddfMap.containsKey(t))third=2*Math.log(noOfTotalDocument/ddfMap.get(t)); 
+			double dLogTF=dtfMap.get(t);
+			double qdIDF=0.0;
+			if(this.IDFmap.containsKey(t)) qdIDF=this.IDFmap.get(t); 
 			 
-			double score=first*second*third;
+			double score=qLogTF*dLogTF*qdIDF;
 			sum+=score;
 		}
 		scoreUpperPart=sum;
 		return scoreUpperPart;
 	}
 	
-	protected double calculateLowerPart(int noOfTotalDocument, HashMap<String,Integer> qtfMap, HashMap<String,Integer> dtfMap,
-			HashMap<String,Double> ddfMap)
+	protected double calculateLowerPart( HashMap<String,Double> qtfMap, HashMap<String,Double> dtfMap)
 	{
 		double scoreLowerPart=0.0;
 		//For Query q
@@ -235,14 +229,14 @@ public class RVSMCalc {
 		HashSet<String> qset = new HashSet<>(qtfMap.keySet());
 		for(String t:qset)
 		{
-			double qTF=(double)qtfMap.get(t);
-			double first=Math.log(qTF)+1;
-			double second=0.0;
-			if(ddfMap.containsKey(t))
+			double qLogTF=qtfMap.get(t);
+			
+			double idf=0.0;
+			if(this.IDFmap.containsKey(t))
 			{
-				second=Math.log(noOfTotalDocument/ddfMap.get(t));
+				idf=this.IDFmap.get(t);
 			}
-			double score=first*second;
+			double score=qLogTF*idf;
 			double squaredScore=Math.pow(score, 2);
 			qsum+=squaredScore;
 		}
@@ -255,14 +249,14 @@ public class RVSMCalc {
 		for(String t:dset)
 		{
 			//System.out.println(t);
-			double dTF=(double)dtfMap.get(t);
-			double first=Math.log(dTF)+1;
-			double second=0.0;
-			if(ddfMap.containsKey(t))
+			double dLogTF=dtfMap.get(t);
+			
+			double idf=0.0;
+			if(this.IDFmap.containsKey(t))
 			{
-				second=Math.log(noOfTotalDocument/ddfMap.get(t));
+				idf=this.IDFmap.get(t);
 			}
-			double score=first*second;
+			double score=dLogTF*idf;
 			double squaredScore=Math.pow(score, 2);
 			dsum+=squaredScore;
 		}
@@ -273,18 +267,7 @@ public class RVSMCalc {
 		
 	}
 	
-	public void writeToFile(HashMap hm, String queryID)
-	{
-		String content="";
-		Iterator it = hm.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        String filePath=pair.getKey().toString();
-	        String rVSMscore=pair.getValue().toString();
-	        content+=filePath+","+rVSMscore+"\r\n";
-	    }
-	   
-	}
+	
 	
 
 	
@@ -298,6 +281,7 @@ public class RVSMCalc {
 		obj.LoadSourceTFhm("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/");
 		obj.LoadSourceIDF();
 		obj.LoadQueryInfo("/Users/user/Documents/Ph.D/2018/Data/QueryData/");
+		obj.calculatRVSM();
 	}
 
 }

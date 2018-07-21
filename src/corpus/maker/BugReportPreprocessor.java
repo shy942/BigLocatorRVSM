@@ -20,6 +20,7 @@ public class BugReportPreprocessor {
 		this.stopwords = new ArrayList<String>();
 		this.loadStopWords();
 		this.stemmer = new Stemmer();
+		this.loadStopWords();
 	}
 
 	protected void loadStopWords() {
@@ -42,8 +43,8 @@ public class BugReportPreprocessor {
 	}
 
 	protected String performStemming(String word) {
-		// return stemmer.stripAffixes(word);
-		return word;
+		return stemmer.stripAffixes(word);
+		//return word;
 	}
 
 	public String performNLP() {
