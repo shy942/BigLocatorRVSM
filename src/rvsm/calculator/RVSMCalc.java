@@ -161,25 +161,27 @@ public class RVSMCalc {
 			
 			ArrayList<String> tempResults=new ArrayList<String>();
 			int resultCount=0;
-			String resultContent=queryInfo+",";
+			
 			for(String srcFile: sortedResult.keySet())
 			{
+				String resultContent=queryInfo.substring(0, queryInfo.length()-4);
 				if(!tempResults.contains(srcFile))
 				{
-					tempResults.add(srcFile);
-					resultContent+=","+srcFile;
 					resultCount++;
 					if(resultCount>10)break;
+					tempResults.add(srcFile);
+					resultContent+=","+srcFile+","+sortedResult.get(srcFile);
+					totalResult.add(resultContent);
 				}
 			}
-			totalResult.add(resultContent);
+			
 			//MiscUtility.showResult(10, sortedResult);
 			System.out.println(count);
 			hm.clear();
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/July20-1.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/July21-1.txt", totalResult);
 	}
 	
 	public HashMap retrieveSortedTopNResult(HashMap hm)
