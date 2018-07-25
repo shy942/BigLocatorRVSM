@@ -19,16 +19,14 @@ public class SimiScoreCalc {
 	public HashMap<String, Double> similarityScoreHM;
 	HashMap<Integer, ArrayList<String>> goldMap;
  	
-	/*public SimiScoreCalc(String sourceCodeFile, String queryContent, String bugFile)
+	public SimiScoreCalc( HashMap<String, String> sourceContentHM, HashMap<String, String> bugContentHM)
 	{
-		this.sourceCodeFile=sourceCodeFile;
-		this.queryContent=queryContent;
-		this.bugFile=bugFile;
-		this.sourceContentHM=new HashMap<>();
-		this.bugContentHM=new HashMap<>();
+		this.sourceContentHM=sourceContentHM;
+		this.bugContentHM=bugContentHM;
 		this.cosineScoreHM=new HashMap<>();
 		this.similarityScoreHM=new HashMap<>();
-	}*/
+		this.goldMap=this.loadGoldsetMap("./Data/gitInfoNew.txt");
+	}
 	
 	public SimiScoreCalc(String sourceCodeFile, String bugFile)
 	{
@@ -103,11 +101,11 @@ public class SimiScoreCalc {
 	}
 	
 	
-	public void SimilarityCalc(String queryContent)
+	public HashMap<String, Double> SimilarityCalc(String queryContent)
 	{
 		//this.sourceContentHM=this.LoadFiles(this.sourceCodeFile);
 		//this.bugContentHM=this.LoadFiles(this.bugFile);
-		this.goldMap=this.loadGoldsetMap("./Data/gitInfoNew.txt");
+		
 		this.cosineSimiCalculator(queryContent);
 		for(String bugID:this.cosineScoreHM.keySet())
 		{ 
@@ -134,18 +132,11 @@ public class SimiScoreCalc {
 			}
 		}
 	}
-		MiscUtility.showResult(20, MiscUtility.sortByValues(this.similarityScoreHM));
+		//MiscUtility.showResult(20, MiscUtility.sortByValues(this.similarityScoreHM));
+		return this.similarityScoreHM;
 }
 	
-	public void modifySoureInfoHM(HashMap<String, HashMap<String, Double>> SourceTFInfo)
-	{
-		for(String sourceID:SourceTFInfo.keySet())
-		{
-			HashMap<String, Double> hm=SourceTFInfo.get(sourceID);
-			String str=MiscUtility.hashMap2Str(hm);
-			System.out.println(str);
-		}
-	}
+	
 	
 	
 	public static void main(String[] args) {

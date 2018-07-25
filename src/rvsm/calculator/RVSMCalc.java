@@ -102,10 +102,21 @@ public class RVSMCalc {
 		//MiscUtility.showResult(10, this.QueryInfo);
 	}
 	
-	
+	public HashMap<String, String> modifySoureInfoHM(HashMap<String, HashMap<String, Double>> SourceTFInfo)
+	{
+		HashMap<String, String> modifyHM=new HashMap<>();
+		for(String sourceID:SourceTFInfo.keySet())
+		{
+			HashMap<String, Double> hm=SourceTFInfo.get(sourceID);
+			String str=MiscUtility.hashMap2Str(hm);
+			modifyHM.put(sourceID, str);
+		}
+		return modifyHM;
+	}
 	protected void calculatRVSM() {
 	
-
+		HashMap<String, String> modifyForSimCalcHM=this.modifySoureInfoHM(this.SourceTFInfo);
+		SimiScoreCalc objSimCalc = new SimiScoreCalc(modifyForSimCalcHM,this.QueryInfo);
 		
 		
 		
@@ -119,9 +130,15 @@ public class RVSMCalc {
 		{
 			count++;
 			//if(count>10) break;
+			
 			String queryContent=this.QueryInfo.get(queryInfo);
-			// collect metrics for the query
+			//Similarty Score Calculation;
+			HashMap<String, Double> resultSimiScore=objSimCalc.SimilarityCalc(queryContent);
+			System.out.println("SimiScore Result===================");
+			MiscUtility.showResult(10, resultSimiScore);
 		
+			// collect metrics for the query
+		    
 			VSMCalculator vcalc = new VSMCalculator(queryContent);
 			HashMap<String, Double> qtfMap = vcalc.getLogTF();
 			
@@ -288,8 +305,7 @@ public class RVSMCalc {
 		obj.LoadQueryInfo(bugInfo);
 		
 		
-		SimiScoreCalc objSimCalc=new SimiScoreCalc(soureInfo,bugInfo);
-		objSimCalc.modifySoureInfoHM(obj.SourceTFInfo);
+		
 		
 		obj.calculatRVSM();
 		
