@@ -16,7 +16,11 @@ public class SourceCodePreProcessor {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new SourceCodePreProcessor("/Users/user/Documents/Backup/ProcessedFiles/").nameChangedandContent("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/");
+		//For Mac
+		//new SourceCodePreProcessor("/Users/user/Documents/Backup/ProcessedFiles/").nameChangedandContent("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/");
+		//For Windows
+		new SourceCodePreProcessor("C:\\Users\\Mukta\\Dropbox\\WorkinginHome\\SCAM\\Implementation\\ProcesedData\\SourceCodes\\ProcessedFiles\\").nameChangedandContent("F:\\PhD\\Data\\SourceForBL\\");
+	
 	}
 	
 	

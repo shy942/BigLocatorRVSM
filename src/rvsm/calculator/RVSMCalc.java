@@ -134,9 +134,13 @@ public class RVSMCalc {
 			String queryContent=this.QueryInfo.get(queryInfo);
 			//Similarty Score Calculation;
 			HashMap<String, Double> resultSimiScore=objSimCalc.SimilarityCalc(queryContent);
-			System.out.println("SimiScore Result===================");
-			MiscUtility.showResult(10, resultSimiScore);
+			HashMap<String, Double> sortedSimiResult=MiscUtility.sortByValues(resultSimiScore);
+			//System.out.println("SimiScore Result===================");
+			//MiscUtility.showResult(10, resultSimiScore);
 		
+			
+			
+			//rVSM score calculator
 			// collect metrics for the query
 		    
 			VSMCalculator vcalc = new VSMCalculator(queryContent);
@@ -175,8 +179,13 @@ public class RVSMCalc {
 				}
 			
 			}
-			HashMap<String, Double> sortedResult=retrieveSortedTopNResult(hm);
+			HashMap<String, Double> sortedRVSMsvoreResult=retrieveSortedTopNResult(hm);
 			
+			
+			//Now combine both RVSM and Simi socres
+			CombinedRVSMandSimiScoreHM(queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
+			
+			/*
 			ArrayList<String> tempResults=new ArrayList<String>();
 			int resultCount=0;
 			
@@ -195,12 +204,44 @@ public class RVSMCalc {
 			
 			//MiscUtility.showResult(10, sortedResult);
 			System.out.println(count);
-			hm.clear();
+			hm.clear();*/
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
 		ContentWriter.writeContent("./Data/Results/July21-1.txt", totalResult);
 	}
+	
+	
+	
+	
+	public HashMap<String, Double> CombinedRVSMandSimiScoreHM(String queryInfo, HashMap<String, Double> sortedSimiResult, HashMap<String, Double> sortedRVSMsvoreResult)
+	{
+		double alpha=0.2;
+		System.out.println("Sorted Simi Score");
+		MiscUtility.showResult(10, sortedSimiResult);
+		System.out.println("Sorted RVSM Score");
+		MiscUtility.showResult(10, sortedRVSMsvoreResult);
+		HashMap<String, Double> combinedResult=new HashMap<>();
+		for(String srcFile: sortedRVSMsvoreResult.keySet())
+		{
+			String resultContent=queryInfo.substring(0, queryInfo.length()-4);
+			if(!combinedResult.containsKey(srcFile))
+			{
+				double finalScore;
+				if(sortedSimiResult.containsKey(srcFile))finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile)+alpha*sortedSimiResult.get(srcFile);
+					
+				else finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile);
+				
+				combinedResult.put(srcFile, finalScore);
+			}
+		}
+		System.out.println("Combined Result");
+		MiscUtility.showResult(10, combinedResult);
+		System.out.println("Sorted Final Result");
+		MiscUtility.showResult(10, MiscUtility.sortByValues(combinedResult));
+		return combinedResult;
+	}
+	
 	
 	public HashMap retrieveSortedTopNResult(HashMap hm)
 	{
@@ -297,8 +338,15 @@ public class RVSMCalc {
 		
 	   
 		RVSMCalc obj=new RVSMCalc();
-		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		//For Mac
+		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		
+		
+		//For Windows
+		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
+		String bugInfo="F:\\PhD\\Data\\BugData\\";
+		
 		
 		obj.LoadSourceTFhm(soureInfo);
 		obj.LoadSourceIDF();
