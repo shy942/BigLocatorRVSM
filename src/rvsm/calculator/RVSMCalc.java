@@ -11,6 +11,7 @@ import javax.rmi.CORBA.Util;
 
 import lucene.TFIDFCalculator;
 import lucene.VSMCalculator;
+import simi.score.calculator.SimiScoreCalc;
 import utility.ContentLoader;
 import utility.ContentWriter;
 import utility.MiscUtility;
@@ -37,7 +38,7 @@ public class RVSMCalc {
 		this.hm=new HashMap<>();
 		this.LengthList=new ArrayList<>();
 	}
-
+	
 	
 	public void LoadSourceTFhm(String SourceCodeDir)
 	{
@@ -277,13 +278,23 @@ public class RVSMCalc {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-	
+	   
 		RVSMCalc obj=new RVSMCalc();
-		//obj.calculatRVSM();
-		obj.LoadSourceTFhm("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/");
+		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		
+		obj.LoadSourceTFhm(soureInfo);
 		obj.LoadSourceIDF();
-		obj.LoadQueryInfo("/Users/user/Documents/Ph.D/2018/Data/QueryData/");
+		obj.LoadQueryInfo(bugInfo);
+		
+		
+		SimiScoreCalc objSimCalc=new SimiScoreCalc(soureInfo,bugInfo);
+		objSimCalc.modifySoureInfoHM(obj.SourceTFInfo);
+		
 		obj.calculatRVSM();
+		
+		
+		
 	}
 
 }

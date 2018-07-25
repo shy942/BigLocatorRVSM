@@ -10,7 +10,7 @@ import utility.MiscUtility;
 
 public class SimiScoreCalc {
 
-	public String queryContent;
+
 	public String sourceCodeFile;
 	public String bugFile;
 	public HashMap<String, String> sourceContentHM;
@@ -19,10 +19,21 @@ public class SimiScoreCalc {
 	public HashMap<String, Double> similarityScoreHM;
 	HashMap<Integer, ArrayList<String>> goldMap;
  	
-	public SimiScoreCalc(String sourceCodeFile, String queryContent, String bugFile)
+	/*public SimiScoreCalc(String sourceCodeFile, String queryContent, String bugFile)
 	{
 		this.sourceCodeFile=sourceCodeFile;
 		this.queryContent=queryContent;
+		this.bugFile=bugFile;
+		this.sourceContentHM=new HashMap<>();
+		this.bugContentHM=new HashMap<>();
+		this.cosineScoreHM=new HashMap<>();
+		this.similarityScoreHM=new HashMap<>();
+	}*/
+	
+	public SimiScoreCalc(String sourceCodeFile, String bugFile)
+	{
+		this.sourceCodeFile=sourceCodeFile;
+		//this.queryContent=queryContent;
 		this.bugFile=bugFile;
 		this.sourceContentHM=new HashMap<>();
 		this.bugContentHM=new HashMap<>();
@@ -73,10 +84,10 @@ public class SimiScoreCalc {
 		return hm;
 	}
 	 
-	public void cosineSimiCalculator() {
+	public void cosineSimiCalculator(String queryContent) {
 			for (String bugID : this.bugContentHM.keySet()) {
 			
-				String str1=this.queryContent;
+				String str1=queryContent;
 				String str2=this.bugContentHM.get(bugID);
 				double cosineSimilarity = new CosineSimilarity().similarity(
 						str1,str2);
@@ -122,14 +133,24 @@ public class SimiScoreCalc {
 		MiscUtility.showResult(20, MiscUtility.sortByValues(this.similarityScoreHM));
 }
 	
+	public void modifySoureInfoHM(HashMap<String, HashMap<String, Double>> SourceTFInfo)
+	{
+		for(String sourceID:SourceTFInfo.keySet())
+		{
+			HashMap<String, Double> hm=SourceTFInfo.get(sourceID);
+			String str=MiscUtility.hashMap2Str(hm);
+			System.out.println(str);
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		SimiScoreCalc obj=new SimiScoreCalc("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/", "/Users/user/Documents/Ph.D/2018/Data/BugData/35427.txt", "/Users/user/Documents/Ph.D/2018/Data/BugData/");
+		SimiScoreCalc obj=new SimiScoreCalc("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/", "/Users/user/Documents/Ph.D/2018/Data/BugData/");
 		obj.sourceContentHM=obj.LoadFiles(obj.sourceCodeFile);
 		obj.bugContentHM=obj.LoadFiles(obj.bugFile);
 		obj.goldMap=obj.loadGoldsetMap("./Data/gitInfoNew.txt");
-		obj.cosineSimiCalculator();
+		obj.cosineSimiCalculator("");
 		obj.SimilarityCalc();
 	}
 
