@@ -103,8 +103,12 @@ public class SimiScoreCalc {
 	}
 	
 	
-	public void SimilarityCalc()
+	public void SimilarityCalc(String queryContent)
 	{
+		//this.sourceContentHM=this.LoadFiles(this.sourceCodeFile);
+		//this.bugContentHM=this.LoadFiles(this.bugFile);
+		this.goldMap=this.loadGoldsetMap("./Data/gitInfoNew.txt");
+		this.cosineSimiCalculator(queryContent);
 		for(String bugID:this.cosineScoreHM.keySet())
 		{ 
 			//System.out.println(bugID);
@@ -151,7 +155,7 @@ public class SimiScoreCalc {
 		obj.bugContentHM=obj.LoadFiles(obj.bugFile);
 		obj.goldMap=obj.loadGoldsetMap("./Data/gitInfoNew.txt");
 		obj.cosineSimiCalculator("");
-		obj.SimilarityCalc();
+		obj.SimilarityCalc("");
 	}
 
 	
