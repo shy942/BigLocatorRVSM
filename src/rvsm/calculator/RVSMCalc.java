@@ -25,6 +25,7 @@ public class RVSMCalc {
 	
 	HashMap<String, Double> IDFmap;
 	HashMap<String, HashMap<String, Double>> SourceTFInfo;
+	HashMap<String, String> SourceInfoForSimiCalc;
 	HashMap<String, String> QueryInfo;
 	HashMap<String, Double> hm;
     ArrayList<String> LengthList;
@@ -34,6 +35,7 @@ public class RVSMCalc {
 		
 		this.IDFmap=new HashMap<>();
 		this.SourceTFInfo=new HashMap<>();
+		this.SourceInfoForSimiCalc=new HashMap<>();
 		this.QueryInfo=new HashMap<>();
 		this.hm=new HashMap<>();
 		this.LengthList=new ArrayList<>();
@@ -50,6 +52,7 @@ public class RVSMCalc {
 		for (File sourceCodeFile : sourceCodeFiles) {
 			String sourceCodeContent = ContentLoader.readContentSimple(sourceCodeFile
 				.getAbsolutePath());
+			this.SourceInfoForSimiCalc.put(sourceCodeFile.getName(),sourceCodeContent);
 			VSMCalculator objVSMCalc =new VSMCalculator(sourceCodeContent);
 			HashMap<String, Double> logTF=objVSMCalc.getLogTF();
 			this.LengthList.add(String.valueOf(objVSMCalc.getTotalNoTerms()));
@@ -101,7 +104,7 @@ public class RVSMCalc {
 		}
 		//MiscUtility.showResult(10, this.QueryInfo);
 	}
-	
+	/*
 	public HashMap<String, String> modifySoureInfoHM(HashMap<String, HashMap<String, Double>> SourceTFInfo)
 	{
 		HashMap<String, String> modifyHM=new HashMap<>();
@@ -112,11 +115,11 @@ public class RVSMCalc {
 			modifyHM.put(sourceID, str);
 		}
 		return modifyHM;
-	}
+	}*/
 	protected void calculatRVSM() {
 	
-		HashMap<String, String> modifyForSimCalcHM=this.modifySoureInfoHM(this.SourceTFInfo);
-		SimiScoreCalc objSimCalc = new SimiScoreCalc(modifyForSimCalcHM,this.QueryInfo);
+		//HashMap<String, String> modifyForSimCalcHM=this.modifySoureInfoHM(this.SourceTFInfo);
+		SimiScoreCalc objSimCalc = new SimiScoreCalc(this.SourceInfoForSimiCalc,this.QueryInfo);
 		
 		
 		
@@ -129,7 +132,7 @@ public class RVSMCalc {
 		for(String queryInfo : this.QueryInfo.keySet())
 		{
 			count++;
-			//if(count>10) break;
+			if(count>1) break;
 			
 			String queryContent=this.QueryInfo.get(queryInfo);
 			//Similarty Score Calculation;
@@ -154,9 +157,9 @@ public class RVSMCalc {
 				int dTotalTerms=this.SourceTFInfo.get(key).size();
 			
 				//Calculate Nx
-				double Nx=(dTotalTerms-minLength)/(maxLength-minLength);
+				double N=(dTotalTerms-minLength)/(maxLength-minLength);
 				//Calculate gTerms
-				double gTerms=1/(1+Math.exp(-Nx));
+				double gTerms=1/(1+Math.exp(-Double.valueOf(dTotalTerms)));
 			
 			
 				// getting common words
@@ -173,7 +176,7 @@ public class RVSMCalc {
 					double scoreUpperPart=calculateUpperPart(qtfMap,dtfMap,commonSet);
 					double scooreLowerPart=calculateLowerPart(qtfMap,dtfMap);
 					double score=0.0;
-					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(gTerms*scoreUpperPart)/scooreLowerPart;
+					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(N*gTerms*scoreUpperPart)/scooreLowerPart;
 					//if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(scoreUpperPart)/scooreLowerPart;
 					this.hm.put(key, score);
 				}
@@ -183,7 +186,7 @@ public class RVSMCalc {
 			
 			
 			//Now combine both RVSM and Simi socres
-			CombinedRVSMandSimiScoreHM(queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
+			CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
 			
 			/*
 			ArrayList<String> tempResults=new ArrayList<String>();
@@ -214,23 +217,47 @@ public class RVSMCalc {
 	
 	
 	
-	public HashMap<String, Double> CombinedRVSMandSimiScoreHM(String queryInfo, HashMap<String, Double> sortedSimiResult, HashMap<String, Double> sortedRVSMsvoreResult)
+	public HashMap<String, Double> CombinedRVSMandSimiScoreHM(double maxLength, double minLength,String queryInfo, HashMap<String, Double> sortedSimiResult, HashMap<String, Double> sortedRVSMsvoreResult)
 	{
 		double alpha=0.2;
-		System.out.println("Sorted Simi Score");
+		//System.out.println("Sorted Simi Score");
 		MiscUtility.showResult(10, sortedSimiResult);
-		System.out.println("Sorted RVSM Score");
+		//System.out.println("Sorted RVSM Score");
 		MiscUtility.showResult(10, sortedRVSMsvoreResult);
 		HashMap<String, Double> combinedResult=new HashMap<>();
+		
+		
+		
 		for(String srcFile: sortedRVSMsvoreResult.keySet())
 		{
+			
 			String resultContent=queryInfo.substring(0, queryInfo.length()-4);
 			if(!combinedResult.containsKey(srcFile))
 			{
+				System.out.println(srcFile+"================================================================");
+				
+				//Calculate N
+				int dTotalTerms=this.SourceInfoForSimiCalc.get(srcFile).length();
+				double N=(dTotalTerms-minLength)/(maxLength-minLength);
+				//System.out.println("N:  "+N);
+				
 				double finalScore;
-				if(sortedSimiResult.containsKey(srcFile))finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile)+alpha*sortedSimiResult.get(srcFile);
+				if(sortedSimiResult.containsKey(srcFile))
+					{
 					
-				else finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile);
+						finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile)+alpha*N*sortedSimiResult.get(srcFile);
+						
+					
+						
+						System.out.println("sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
+						System.out.println("alpha*N*sortedSimiResult.get(srcFile) "+alpha*N*sortedSimiResult.get(srcFile));
+					}
+					
+				else 
+					{
+						finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile);
+						
+					}
 				
 				combinedResult.put(srcFile, finalScore);
 			}
