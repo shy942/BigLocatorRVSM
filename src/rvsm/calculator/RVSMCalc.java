@@ -176,7 +176,7 @@ public class RVSMCalc {
 					double scoreUpperPart=calculateUpperPart(qtfMap,dtfMap,commonSet);
 					double scooreLowerPart=calculateLowerPart(qtfMap,dtfMap);
 					double score=0.0;
-					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(N*gTerms*scoreUpperPart)/scooreLowerPart;
+					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(gTerms*scoreUpperPart)/scooreLowerPart;
 					//if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(scoreUpperPart)/scooreLowerPart;
 					this.hm.put(key, score);
 				}
@@ -220,9 +220,9 @@ public class RVSMCalc {
 	public HashMap<String, Double> CombinedRVSMandSimiScoreHM(double maxLength, double minLength,String queryInfo, HashMap<String, Double> sortedSimiResult, HashMap<String, Double> sortedRVSMsvoreResult)
 	{
 		double alpha=0.2;
-		//System.out.println("Sorted Simi Score");
+		System.out.println("Sorted Simi Score");
 		MiscUtility.showResult(10, sortedSimiResult);
-		//System.out.println("Sorted RVSM Score");
+		System.out.println("Sorted RVSM Score");
 		MiscUtility.showResult(10, sortedRVSMsvoreResult);
 		HashMap<String, Double> combinedResult=new HashMap<>();
 		
@@ -234,7 +234,7 @@ public class RVSMCalc {
 			String resultContent=queryInfo.substring(0, queryInfo.length()-4);
 			if(!combinedResult.containsKey(srcFile))
 			{
-				System.out.println(srcFile+"================================================================");
+				//System.out.println(srcFile+"================================================================");
 				
 				//Calculate N
 				int dTotalTerms=this.SourceInfoForSimiCalc.get(srcFile).length();
@@ -249,8 +249,8 @@ public class RVSMCalc {
 						
 					
 						
-						System.out.println("sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
-						System.out.println("alpha*N*sortedSimiResult.get(srcFile) "+alpha*N*sortedSimiResult.get(srcFile));
+						//System.out.println("sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
+						//System.out.println("alpha*N*sortedSimiResult.get(srcFile) "+alpha*N*sortedSimiResult.get(srcFile));
 					}
 					
 				else 
@@ -262,8 +262,8 @@ public class RVSMCalc {
 				combinedResult.put(srcFile, finalScore);
 			}
 		}
-		System.out.println("Combined Result");
-		MiscUtility.showResult(10, combinedResult);
+		//System.out.println("Combined Result");
+		//MiscUtility.showResult(10, combinedResult);
 		System.out.println("Sorted Final Result");
 		MiscUtility.showResult(10, MiscUtility.sortByValues(combinedResult));
 		return combinedResult;
