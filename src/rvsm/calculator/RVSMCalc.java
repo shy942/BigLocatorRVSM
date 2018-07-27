@@ -132,7 +132,7 @@ public class RVSMCalc {
 		for(String queryInfo : this.QueryInfo.keySet())
 		{
 			count++;
-			if(count>1) break;
+			//if(count>1) break;
 			
 			String queryContent=this.QueryInfo.get(queryInfo);
 			//Similarty Score Calculation;
@@ -187,14 +187,13 @@ public class RVSMCalc {
 			MiscUtility.showResult(10, sortedRVSMsvoreResult);
 			
 			//Now combine both RVSM and Simi socres
-			CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
-			sortedRVSMsvoreResult.clear();
-		    sortedSimiResult.clear();
-			/*
+			HashMap<String,Double> finalSortedCombonedResult=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
+			
+			
 			ArrayList<String> tempResults=new ArrayList<String>();
 			int resultCount=0;
 			
-			for(String srcFile: sortedResult.keySet())
+			for(String srcFile: finalSortedCombonedResult.keySet())
 			{
 				String resultContent=queryInfo.substring(0, queryInfo.length()-4);
 				if(!tempResults.contains(srcFile))
@@ -202,18 +201,20 @@ public class RVSMCalc {
 					resultCount++;
 					if(resultCount>10)break;
 					tempResults.add(srcFile);
-					resultContent+=","+srcFile+","+sortedResult.get(srcFile);
+					resultContent+=","+srcFile+","+finalSortedCombonedResult.get(srcFile);
 					totalResult.add(resultContent);
 				}
 			}
 			
 			//MiscUtility.showResult(10, sortedResult);
-			System.out.println(count);*/
+			System.out.println(count);
 			this.hm.clear();
+			sortedRVSMsvoreResult.clear();
+		    sortedSimiResult.clear();
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/July21-1.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/BugLocatorJuly27.txt", totalResult);
 	}
 	
 	
