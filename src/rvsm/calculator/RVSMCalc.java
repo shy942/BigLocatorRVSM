@@ -178,12 +178,13 @@ public class RVSMCalc {
 					double score=0.0;
 					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(gTerms*scoreUpperPart)/scooreLowerPart;
 					//if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(scoreUpperPart)/scooreLowerPart;
-					this.hm.put(key, score);
+					this.hm.put(key, score); 
 				}
 			
 			}
-			HashMap<String, Double> sortedRVSMsvoreResult=retrieveSortedTopNResult(hm);
-			
+			MiscUtility.showResult(10, hm);
+			HashMap<String, Double> sortedRVSMsvoreResult=retrieveSortedTopNResult(this.hm);
+			MiscUtility.showResult(10, sortedRVSMsvoreResult);
 			
 			//Now combine both RVSM and Simi socres
 			CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
@@ -206,8 +207,8 @@ public class RVSMCalc {
 			}
 			
 			//MiscUtility.showResult(10, sortedResult);
-			System.out.println(count);
-			hm.clear();*/
+			System.out.println(count);*/
+			this.hm.clear();
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
@@ -234,7 +235,7 @@ public class RVSMCalc {
 			String resultContent=queryInfo.substring(0, queryInfo.length()-4);
 			if(!combinedResult.containsKey(srcFile))
 			{
-				//System.out.println(srcFile+"================================================================");
+				System.out.println(srcFile+"================================================================"+sortedRVSMsvoreResult.get(srcFile));
 				
 				//Calculate N
 				int dTotalTerms=this.SourceInfoForSimiCalc.get(srcFile).length();
@@ -245,8 +246,9 @@ public class RVSMCalc {
 				if(sortedSimiResult.containsKey(srcFile))
 					{
 					
-						finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile)+alpha*N*sortedSimiResult.get(srcFile);
-						
+						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile)+alpha*N*sortedSimiResult.get(srcFile);
+						//System.out.println((1-alpha)*N);
+						System.out.println("sortedRVSMsvoreResult.get(srcFile) "+sortedRVSMsvoreResult.get(srcFile)+" sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
 					
 						
 						//System.out.println("sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
@@ -255,7 +257,7 @@ public class RVSMCalc {
 					
 				else 
 					{
-						finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile);
+						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile);
 						
 					}
 				
@@ -366,13 +368,13 @@ public class RVSMCalc {
 	   
 		RVSMCalc obj=new RVSMCalc();
 		//For Mac
-		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 		
 		
 		//For Windows
-		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		String bugInfo="F:\\PhD\\Data\\BugData\\";
+		//String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
+		//String bugInfo="F:\\PhD\\Data\\BugData\\";
 		
 		
 		obj.LoadSourceTFhm(soureInfo);
