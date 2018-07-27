@@ -12,7 +12,7 @@ public class QueryFilePreProcessor {
 		//For Mac
 		//new QueryFilePreProcessor().nameChangedandContent("/Users/user/Documents/Backup/QueryData/", "/Users/user/Documents/Ph.D/2018/Data/BugData/");
 		//For windows
-		new QueryFilePreProcessor().nameChangedandContentWindows("C:\\Users\\Mukta\\Dropbox\\WorkinginHome\\SCAM\\Implementation\\ProcesedData\\BugReports\\2001\\", "F:\\PhD\\Data\\BugData\\");
+		new QueryFilePreProcessor().nameChangedandContentWindows("F:\\BigDataProject\\QueriesFolder\\", "F:\\PhD\\Data\\BugDataNew\\");
 	}
 
 	private void nameChangedandContentWindows(String queryFilePath, String outFolder) {
@@ -24,7 +24,7 @@ public class QueryFilePreProcessor {
 			String queryContent = ContentLoader.readContentSimple(bugFile
 				.getAbsolutePath());
 			//System.out.println(sourceCodeContent);
-			String[] spilter=queryContent.split(",");
+			String[] spilter=queryContent.split(" ");
 			if(spilter.length>=2)
 			{
 				String content="";

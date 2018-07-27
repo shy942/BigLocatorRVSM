@@ -104,18 +104,8 @@ public class RVSMCalc {
 		}
 		//MiscUtility.showResult(10, this.QueryInfo);
 	}
-	/*
-	public HashMap<String, String> modifySoureInfoHM(HashMap<String, HashMap<String, Double>> SourceTFInfo)
-	{
-		HashMap<String, String> modifyHM=new HashMap<>();
-		for(String sourceID:SourceTFInfo.keySet())
-		{
-			HashMap<String, Double> hm=SourceTFInfo.get(sourceID);
-			String str=MiscUtility.hashMap2Str(hm);
-			modifyHM.put(sourceID, str);
-		}
-		return modifyHM;
-	}*/
+	
+	
 	protected void calculatRVSM() {
 	
 		//HashMap<String, String> modifyForSimCalcHM=this.modifySoureInfoHM(this.SourceTFInfo);
@@ -249,24 +239,19 @@ public class RVSMCalc {
 					{
 					
 						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile)+alpha*N*sortedSimiResult.get(srcFile);
-						//System.out.println((1-alpha)*N);
-						//System.out.println("sortedRVSMsvoreResult.get(srcFile) "+sortedRVSMsvoreResult.get(srcFile)+" sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
-						//System.out.println(finalScore);
-						//System.out.println("sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
-						//System.out.println("alpha*N*sortedSimiResult.get(srcFile) "+alpha*N*sortedSimiResult.get(srcFile));
+						
 					}
 					
 				else 
 					{
 						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile);
-						//System.out.println(finalScore);
+						
 					}
-				if(finalScore>1.0)System.out.println(srcFile+"--------------------------"+sortedRVSMsvoreResult.get(srcFile)+" "+N+" "+dTotalTerms);
+				if(finalScore>1.0)System.out.println(srcFile+"--------------------------"+sortedRVSMsvoreResult.get(srcFile)+" "+N+" "+dTotalTerms+" "+sortedSimiResult.get(srcFile));
 				combinedResult.put(srcFile, finalScore);
 			}
 		}
-		//System.out.println("Combined Result");
-		//MiscUtility.showResult(10, combinedResult);
+		
 		HashMap<String,Double> finalSortedCombonedResult=MiscUtility.sortByValues(combinedResult);
 		System.out.println("Sorted Final Result");
 		MiscUtility.showResult(10,finalSortedCombonedResult);
@@ -376,7 +361,8 @@ public class RVSMCalc {
 		
 		//For Windows
 		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		String bugInfo="F:\\PhD\\Data\\BugData\\";
+		String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
+	
 		
 		
 		obj.LoadSourceTFhm(soureInfo);
