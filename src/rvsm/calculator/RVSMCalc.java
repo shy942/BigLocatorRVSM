@@ -55,7 +55,7 @@ public class RVSMCalc {
 			this.SourceInfoForSimiCalc.put(sourceCodeFile.getName(),sourceCodeContent);
 			VSMCalculator objVSMCalc =new VSMCalculator(sourceCodeContent);
 			HashMap<String, Double> logTF=objVSMCalc.getLogTF();
-			this.LengthList.add(String.valueOf(objVSMCalc.getTotalNoTerms()));
+			this.LengthList.add(String.valueOf(sourceCodeContent.length()));
 			this.SourceTFInfo.put(sourceCodeFile.getName(), logTF);
 			
 		}
@@ -188,7 +188,8 @@ public class RVSMCalc {
 			
 			//Now combine both RVSM and Simi socres
 			CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
-			
+			sortedRVSMsvoreResult.clear();
+		    sortedSimiResult.clear();
 			/*
 			ArrayList<String> tempResults=new ArrayList<String>();
 			int resultCount=0;
@@ -221,9 +222,9 @@ public class RVSMCalc {
 	public HashMap<String, Double> CombinedRVSMandSimiScoreHM(double maxLength, double minLength,String queryInfo, HashMap<String, Double> sortedSimiResult, HashMap<String, Double> sortedRVSMsvoreResult)
 	{
 		double alpha=0.2;
-		System.out.println("Sorted Simi Score");
+		System.out.println("Sorted Simi Score=================================");
 		MiscUtility.showResult(10, sortedSimiResult);
-		System.out.println("Sorted RVSM Score");
+		System.out.println("Sorted RVSM Score=================================");
 		MiscUtility.showResult(10, sortedRVSMsvoreResult);
 		HashMap<String, Double> combinedResult=new HashMap<>();
 		
@@ -235,7 +236,7 @@ public class RVSMCalc {
 			String resultContent=queryInfo.substring(0, queryInfo.length()-4);
 			if(!combinedResult.containsKey(srcFile))
 			{
-				System.out.println(srcFile+"================================================================"+sortedRVSMsvoreResult.get(srcFile));
+				//System.out.println(srcFile+"================================================================"+sortedRVSMsvoreResult.get(srcFile));
 				
 				//Calculate N
 				int dTotalTerms=this.SourceInfoForSimiCalc.get(srcFile).length();
@@ -248,9 +249,8 @@ public class RVSMCalc {
 					
 						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile)+alpha*N*sortedSimiResult.get(srcFile);
 						//System.out.println((1-alpha)*N);
-						System.out.println("sortedRVSMsvoreResult.get(srcFile) "+sortedRVSMsvoreResult.get(srcFile)+" sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
-					
-						
+						//System.out.println("sortedRVSMsvoreResult.get(srcFile) "+sortedRVSMsvoreResult.get(srcFile)+" sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
+						//System.out.println(finalScore);
 						//System.out.println("sortedSimiResult.get(srcFile) "+sortedSimiResult.get(srcFile));
 						//System.out.println("alpha*N*sortedSimiResult.get(srcFile) "+alpha*N*sortedSimiResult.get(srcFile));
 					}
@@ -258,17 +258,18 @@ public class RVSMCalc {
 				else 
 					{
 						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile);
-						
+						//System.out.println(finalScore);
 					}
-				
+				if(finalScore>1.0)System.out.println(srcFile+"--------------------------"+sortedRVSMsvoreResult.get(srcFile)+" "+N+" "+dTotalTerms);
 				combinedResult.put(srcFile, finalScore);
 			}
 		}
 		//System.out.println("Combined Result");
 		//MiscUtility.showResult(10, combinedResult);
+		HashMap<String,Double> finalSortedCombonedResult=MiscUtility.sortByValues(combinedResult);
 		System.out.println("Sorted Final Result");
-		MiscUtility.showResult(10, MiscUtility.sortByValues(combinedResult));
-		return combinedResult;
+		MiscUtility.showResult(10,finalSortedCombonedResult);
+		return finalSortedCombonedResult;
 	}
 	
 	
@@ -368,13 +369,13 @@ public class RVSMCalc {
 	   
 		RVSMCalc obj=new RVSMCalc();
 		//For Mac
-		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 		
 		
 		//For Windows
-		//String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		//String bugInfo="F:\\PhD\\Data\\BugData\\";
+		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
+		String bugInfo="F:\\PhD\\Data\\BugData\\";
 		
 		
 		obj.LoadSourceTFhm(soureInfo);
