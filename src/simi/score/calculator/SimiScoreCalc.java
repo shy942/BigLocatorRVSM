@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import lucene.VSMCalculator;
+import sun.security.util.Length;
 import utility.ContentLoader;
 import utility.MiscUtility;
 
@@ -15,16 +16,16 @@ public class SimiScoreCalc {
 	public String bugFile;
 	public HashMap<String, String> sourceContentHM;
 	public HashMap<String, String> bugContentHM;
-	public HashMap<String, Double> cosineScoreHM;
-	public HashMap<String, Double> similarityScoreHM;
+	//public HashMap<String, Double> cosineScoreHM;
+	//public HashMap<String, Double> similarityScoreHM;
 	HashMap<Integer, ArrayList<String>> goldMap;
  	
 	public SimiScoreCalc( HashMap<String, String> sourceContentHM, HashMap<String, String> bugContentHM)
 	{
 		this.sourceContentHM=sourceContentHM;
 		this.bugContentHM=bugContentHM;
-		this.cosineScoreHM=new HashMap<>();
-		this.similarityScoreHM=new HashMap<>();
+		//this.cosineScoreHM=new HashMap<>();
+		//this.similarityScoreHM=new HashMap<>();
 		this.goldMap=this.loadGoldsetMap("./Data/gitInfoNew.txt");
 	}
 	
@@ -35,8 +36,8 @@ public class SimiScoreCalc {
 		this.bugFile=bugFile;
 		this.sourceContentHM=new HashMap<>();
 		this.bugContentHM=new HashMap<>();
-		this.cosineScoreHM=new HashMap<>();
-		this.similarityScoreHM=new HashMap<>();
+		//this.cosineScoreHM=new HashMap<>();
+		//this.similarityScoreHM=new HashMap<>();
 	}
 	
 	protected HashMap<Integer, ArrayList<String>> loadGoldsetMap(String goldFile) {
@@ -82,7 +83,8 @@ public class SimiScoreCalc {
 		return hm;
 	}
 	 
-	public void cosineSimiCalculator(String queryContent) {
+	public HashMap<String, Double> cosineSimiCalculator (String queryContent) {
+		HashMap<String, Double> cosineScoreHM=new HashMap<>();;
 			for (String bugID : this.bugContentHM.keySet()) {
 			
 				String str1=queryContent;
@@ -94,10 +96,11 @@ public class SimiScoreCalc {
 				if (cosineSimilarity > 0) {
 					String bugIDfound = bugID;
 					
-					//System.out.println(bugIDfound+" "+cosineSimilarity);
-					this.cosineScoreHM.put(bugIDfound, cosineSimilarity);
+					if(cosineSimilarity>1.0)System.out.println(bugIDfound+" "+cosineSimilarity);
+					cosineScoreHM.put(bugIDfound, cosineSimilarity);
 				}
 			}
+			return cosineScoreHM;
 	}
 	
 	
@@ -105,9 +108,11 @@ public class SimiScoreCalc {
 	{
 		//this.sourceContentHM=this.LoadFiles(this.sourceCodeFile);
 		//this.bugContentHM=this.LoadFiles(this.bugFile);
-		
-		this.cosineSimiCalculator(queryContent);
-		for(String bugID:this.cosineScoreHM.keySet())
+		HashMap<String , Integer> sourceLengthInfo=new HashMap<>();
+		HashMap<String, Double> cosineScoreHM=this.cosineSimiCalculator(queryContent);
+		HashMap<String, Double> similarityScoreHM=new HashMap<>();
+
+		for(String bugID:cosineScoreHM.keySet())
 		{ 
 			//System.out.println(bugID);
 			if(bugID.equalsIgnoreCase(".DS_Store")==false){
@@ -116,24 +121,38 @@ public class SimiScoreCalc {
 				//System.out.println(this.goldMap.get(ID));
 				int n_i=this.goldMap.get(ID).size();
 				for(String file:this.goldMap.get(ID)){
-					if(this.similarityScoreHM.containsKey(file))
+					if(similarityScoreHM.containsKey(file))
 					{
-						double simiScoreOld=this.similarityScoreHM.get(file);
-						double simiScoreSi=simiScoreOld+this.cosineScoreHM.get(bugID)/Double.valueOf(n_i);
-						this.similarityScoreHM.put(file, simiScoreSi);
-					
+						double simiScoreOld=similarityScoreHM.get(file);
+						if(cosineScoreHM.get(bugID)>1.0)System.out.println(" this.similarityScoreHM.get(file) "+similarityScoreHM.get(file));
+						double simiScoreSi=simiScoreOld+cosineScoreHM.get(bugID)/Double.valueOf(n_i);
+						similarityScoreHM.put(file, simiScoreSi);
+						int length=sourceLengthInfo.get(file);
+						length+=1;
+						sourceLengthInfo.put(file,length);
 					}
 					else
 					{
-						double simiScoreSi=this.cosineScoreHM.get(bugID)/Double.valueOf(n_i);
-						this.similarityScoreHM.put(file, simiScoreSi);
+						//if(this.cosineScoreHM.get(bugID)>1.0)System.out.println(" this.similarityScoreHM.get(file) "+this.similarityScoreHM.get(file));
+						double simiScoreSi=cosineScoreHM.get(bugID)/Double.valueOf(n_i);
+						similarityScoreHM.put(file, simiScoreSi);
+						sourceLengthInfo.put(file, 1);
 					}
 				}
 			}
 		}
 	}
-		//MiscUtility.showResult(20, MiscUtility.sortByValues(this.similarityScoreHM));
-		return this.similarityScoreHM;
+		//MiscUtility.showResult(20, MiscUtility.sortByValues(similarityScoreHM));
+		for(String file: similarityScoreHM.keySet())
+		{
+			double score=similarityScoreHM.get(file);
+			int length=sourceLengthInfo.get(file);
+			double avgScore=score/length;
+			similarityScoreHM.put(file, avgScore);
+		}
+	
+		//MiscUtility.showResult(10, similarityScoreHM);
+		return similarityScoreHM;
 }
 	
 	

@@ -308,18 +308,18 @@ public class BLPerformanceCalc {
 		int TOPK = 10;
 
 		// String fileName="./data/buglocator/eclipseoutput.txt";
-		String resultFile = "./data/Results/BugLocatorJuly27.txt";
+		String resultFile = "./data/Results/BugLocatorJuly29.txt";
 		String goldFile = "./data/gitInfoNew.txt";
 		BLPerformanceCalc bcalc = new BLPerformanceCalc(resultFile, TOPK,
 				goldFile);
 		double topk = bcalc.getTopKAccOwn();
 
 		System.out.println("Top-K: " + topk);
-		/*
-		 * double preck = bcalc.getMeanAvgPrecisionAtK();
-		 * System.out.println("MAP@K: " + preck); double recallk =
-		 * bcalc.getMeanRecall(); System.out.println("MR@K: " + recallk); double
-		 * rrK = bcalc.getMRRK(TOPK); System.out.println("MRR@K: " + rrK);
-		 */
+		
+		  double preck = bcalc.getMeanAvgPrecisionAtK();
+		  System.out.println("MAP@K: " + preck); double recallk =
+		  bcalc.getMeanRecall(); System.out.println("MR@K: " + recallk); double
+		  rrK = bcalc.getMRRK(TOPK); System.out.println("MRR@K: " + rrK);
+		 
 	}
 }

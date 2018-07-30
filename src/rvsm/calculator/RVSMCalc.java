@@ -109,7 +109,7 @@ public class RVSMCalc {
 	protected void calculatRVSM() {
 	
 		//HashMap<String, String> modifyForSimCalcHM=this.modifySoureInfoHM(this.SourceTFInfo);
-		SimiScoreCalc objSimCalc = new SimiScoreCalc(this.SourceInfoForSimiCalc,this.QueryInfo);
+		//SimiScoreCalc objSimCalc = new SimiScoreCalc(this.SourceInfoForSimiCalc,this.QueryInfo);
 		
 		
 		
@@ -122,12 +122,12 @@ public class RVSMCalc {
 		for(String queryInfo : this.QueryInfo.keySet())
 		{
 			count++;
-			//if(count>1) break;
+			if(count>100) break; 
 			
 			String queryContent=this.QueryInfo.get(queryInfo);
 			//Similarty Score Calculation;
-			HashMap<String, Double> resultSimiScore=objSimCalc.SimilarityCalc(queryContent);
-			HashMap<String, Double> sortedSimiResult=MiscUtility.sortByValues(resultSimiScore);
+			//HashMap<String, Double> resultSimiScore=objSimCalc.SimilarityCalc(queryContent);
+			//HashMap<String, Double> sortedSimiResult=MiscUtility.sortByValues(resultSimiScore);
 			//System.out.println("SimiScore Result===================");
 			//MiscUtility.showResult(10, resultSimiScore);
 		
@@ -172,12 +172,13 @@ public class RVSMCalc {
 				}
 			
 			}
-			MiscUtility.showResult(10, hm);
+			//MiscUtility.showResult(10, hm);
 			HashMap<String, Double> sortedRVSMsvoreResult=retrieveSortedTopNResult(this.hm);
-			MiscUtility.showResult(10, sortedRVSMsvoreResult);
+			//MiscUtility.showResult(10, sortedRVSMsvoreResult);
 			
 			//Now combine both RVSM and Simi socres
-			HashMap<String,Double> finalSortedCombonedResult=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
+			HashMap<String,Double> finalSortedCombonedResult=sortedRVSMsvoreResult;
+			//=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
 			
 			
 			ArrayList<String> tempResults=new ArrayList<String>();
@@ -200,11 +201,11 @@ public class RVSMCalc {
 			System.out.println(count);
 			this.hm.clear();
 			sortedRVSMsvoreResult.clear();
-		    sortedSimiResult.clear();
+		    //sortedSimiResult.clear();
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/BugLocatorJuly27.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/BugLocatorJuly29.txt", totalResult);
 	}
 	
 	
@@ -213,10 +214,10 @@ public class RVSMCalc {
 	public HashMap<String, Double> CombinedRVSMandSimiScoreHM(double maxLength, double minLength,String queryInfo, HashMap<String, Double> sortedSimiResult, HashMap<String, Double> sortedRVSMsvoreResult)
 	{
 		double alpha=0.2;
-		System.out.println("Sorted Simi Score=================================");
-		MiscUtility.showResult(10, sortedSimiResult);
-		System.out.println("Sorted RVSM Score=================================");
-		MiscUtility.showResult(10, sortedRVSMsvoreResult);
+		//System.out.println("Sorted Simi Score=================================");
+		//MiscUtility.showResult(10, sortedSimiResult);
+		//System.out.println("Sorted RVSM Score=================================");
+		//MiscUtility.showResult(10, sortedRVSMsvoreResult);
 		HashMap<String, Double> combinedResult=new HashMap<>();
 		
 		
@@ -238,7 +239,7 @@ public class RVSMCalc {
 				if(sortedSimiResult.containsKey(srcFile))
 					{
 					
-						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile)+alpha*N*sortedSimiResult.get(srcFile);
+						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile)+alpha*sortedSimiResult.get(srcFile);
 						
 					}
 					
@@ -253,8 +254,8 @@ public class RVSMCalc {
 		}
 		
 		HashMap<String,Double> finalSortedCombonedResult=MiscUtility.sortByValues(combinedResult);
-		System.out.println("Sorted Final Result");
-		MiscUtility.showResult(10,finalSortedCombonedResult);
+		//System.out.println("Sorted Final Result");
+		//MiscUtility.showResult(10,finalSortedCombonedResult);
 		return finalSortedCombonedResult;
 	}
 	
@@ -355,13 +356,13 @@ public class RVSMCalc {
 	   
 		RVSMCalc obj=new RVSMCalc();
 		//For Mac
-		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 		
 		
 		//For Windows
-		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
+		//String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
+		//String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
 	
 		
 		
