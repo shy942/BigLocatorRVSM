@@ -28,7 +28,7 @@ public class RVSMCalc {
 	HashMap<String, String> SourceInfoForSimiCalc;
 	HashMap<String, String> QueryInfo;
 	HashMap<String, Double> hm;
-    ArrayList<String> LengthList;
+    
 	
 	public RVSMCalc() {
 		
@@ -38,7 +38,7 @@ public class RVSMCalc {
 		this.SourceInfoForSimiCalc=new HashMap<>();
 		this.QueryInfo=new HashMap<>();
 		this.hm=new HashMap<>();
-		this.LengthList=new ArrayList<>();
+		
 	}
 	
 	
@@ -55,30 +55,30 @@ public class RVSMCalc {
 			this.SourceInfoForSimiCalc.put(sourceCodeFile.getName(),sourceCodeContent);
 			VSMCalculator objVSMCalc =new VSMCalculator(sourceCodeContent);
 			HashMap<String, Double> logTF=objVSMCalc.getLogTF();
-			this.LengthList.add(String.valueOf(sourceCodeContent.length()));
+			//this.LengthList.add(String.valueOf(sourceCodeContent.length()));
 			this.SourceTFInfo.put(sourceCodeFile.getName(), logTF);
 			
 		}
 		//MiscUtility.showResult(10, this.SourceTFInfo);
 	}
 	
-	public Long getMaxLength()
+	public Double getMaxLength(ArrayList<String> LengthList)
 	{
-		Long MaxLen=(long) 0;
-		for(String len:this.LengthList)
+		Double MaxLen=(Double) 0.0;
+		for(String len:LengthList)
 		{
-			Long lengthInt=Long.valueOf(len);
+			Double lengthInt=Double.valueOf(len);
 			if(MaxLen<lengthInt)MaxLen=lengthInt;
 		}
 		return MaxLen;
 	}
 	
-	public Long getMinLength()
+	public Double getMinLength(ArrayList<String> LengthList)
 	{
-		Long MinLen=(long) 100000;
-		for(String len:this.LengthList)
+		Double MinLen=(Double) 100000.0;
+		for(String len:LengthList)
 		{
-			Long lengthInt=Long.valueOf(len);
+			Double lengthInt=Double.valueOf(len);
 			if(MinLen>lengthInt)MinLen=lengthInt;
 		}
 		return MinLen;
@@ -109,13 +109,11 @@ public class RVSMCalc {
 	protected void calculatRVSM() {
 	
 		//HashMap<String, String> modifyForSimCalcHM=this.modifySoureInfoHM(this.SourceTFInfo);
-		//SimiScoreCalc objSimCalc = new SimiScoreCalc(this.SourceInfoForSimiCalc,this.QueryInfo);
+		SimiScoreCalc objSimCalc = new SimiScoreCalc(this.SourceInfoForSimiCalc,this.QueryInfo);
 		
 		
 		
-		double maxLength=Double.valueOf(this.getMaxLength());
-		double minLength=Double.valueOf(this.getMinLength());
-		System.out.println(maxLength+" "+minLength);
+		
 		
 		int count=0;
 		ArrayList<String> totalResult=new ArrayList<>();
@@ -126,8 +124,8 @@ public class RVSMCalc {
 			
 			String queryContent=this.QueryInfo.get(queryInfo);
 			//Similarty Score Calculation;
-			//HashMap<String, Double> resultSimiScore=objSimCalc.SimilarityCalc(queryContent);
-			//HashMap<String, Double> sortedSimiResult=MiscUtility.sortByValues(resultSimiScore);
+			HashMap<String, Double> resultSimiScore=objSimCalc.SimilarityCalc(queryContent);
+			HashMap<String, Double> sortedSimiResult=MiscUtility.sortByValues(resultSimiScore);
 			//System.out.println("SimiScore Result===================");
 			//MiscUtility.showResult(10, resultSimiScore);
 		
@@ -135,7 +133,7 @@ public class RVSMCalc {
 			
 			//rVSM score calculator
 			// collect metrics for the query
-		    
+			ArrayList<String> lengthList=new ArrayList<>();
 			VSMCalculator vcalc = new VSMCalculator(queryContent);
 			HashMap<String, Double> qtfMap = vcalc.getLogTF();
 			
@@ -144,10 +142,10 @@ public class RVSMCalc {
 				
 				HashMap<String, Double> dtfMap = this.SourceTFInfo.get(key);
 				
-				int dTotalTerms=this.SourceTFInfo.get(key).size();
+				int dTotalTerms=this.SourceInfoForSimiCalc.get(key).length();
 			
 				//Calculate Nx
-				double N=(dTotalTerms-minLength)/(maxLength-minLength);
+				//double N=(dTotalTerms-minLength)/(maxLength-minLength);
 				//Calculate gTerms
 				double gTerms=1/(1+Math.exp(-Double.valueOf(dTotalTerms)));
 			
@@ -169,16 +167,38 @@ public class RVSMCalc {
 					if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(gTerms*scoreUpperPart)/scooreLowerPart;
 					//if(scoreUpperPart!=0&&scooreLowerPart!=0) score=(scoreUpperPart)/scooreLowerPart;
 					this.hm.put(key, score); 
+					lengthList.add(String.valueOf(score));
 				}
 			
 			}
 			//MiscUtility.showResult(10, hm);
 			HashMap<String, Double> sortedRVSMsvoreResult=retrieveSortedTopNResult(this.hm);
+			double maxLength=Double.valueOf(this.getMaxLength(lengthList));
+			double minLength=Double.valueOf(this.getMinLength(lengthList));
+			System.out.println(maxLength+" "+minLength);
+			for(String key:sortedRVSMsvoreResult.keySet())
+			{
+				double score=sortedRVSMsvoreResult.get(key);
+			
+				
+				Double N=(score-minLength)/(maxLength-minLength);
+				
+				
+				//if(score>1.0)
+				{
+					System.out.println(maxLength+" "+minLength);
+					System.out.println(" score  "+score);
+					System.out.println("N  "+N);
+				}
+				score=N;
+				System.out.println("After normalization score "+score);
+				sortedRVSMsvoreResult.put(key, score);
+			}
+		
 			//MiscUtility.showResult(10, sortedRVSMsvoreResult);
 			
 			//Now combine both RVSM and Simi socres
-			HashMap<String,Double> finalSortedCombonedResult=sortedRVSMsvoreResult;
-			//=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
+			HashMap<String,Double> finalSortedCombonedResult=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
 			
 			
 			ArrayList<String> tempResults=new ArrayList<String>();
@@ -201,11 +221,11 @@ public class RVSMCalc {
 			System.out.println(count);
 			this.hm.clear();
 			sortedRVSMsvoreResult.clear();
-		    //sortedSimiResult.clear();
+		    sortedSimiResult.clear();
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/BugLocatorJuly29.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/BugLocatorJuly30-Avg.txt", totalResult);
 	}
 	
 	
@@ -231,24 +251,24 @@ public class RVSMCalc {
 				//System.out.println(srcFile+"================================================================"+sortedRVSMsvoreResult.get(srcFile));
 				
 				//Calculate N
-				int dTotalTerms=this.SourceInfoForSimiCalc.get(srcFile).length();
-				double N=(dTotalTerms-minLength)/(maxLength-minLength);
+				//int dTotalTerms=this.SourceInfoForSimiCalc.get(srcFile).length();
+				//double N=(dTotalTerms-minLength)/(maxLength-minLength);
 				//System.out.println("N:  "+N);
 				
 				double finalScore;
 				if(sortedSimiResult.containsKey(srcFile))
 					{
 					
-						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile)+alpha*sortedSimiResult.get(srcFile);
+						finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile)+alpha*sortedSimiResult.get(srcFile);
 						
 					}
 					
 				else 
 					{
-						finalScore=(1-alpha)*N*sortedRVSMsvoreResult.get(srcFile);
+						finalScore=(1-alpha)*sortedRVSMsvoreResult.get(srcFile);
 						
 					}
-				if(finalScore>1.0)System.out.println(srcFile+"--------------------------"+sortedRVSMsvoreResult.get(srcFile)+" "+N+" "+dTotalTerms+" "+sortedSimiResult.get(srcFile));
+				if(finalScore>1.0)System.out.println(srcFile+"--------------------------"+sortedRVSMsvoreResult.get(srcFile)+"  "+sortedSimiResult.get(srcFile));
 				combinedResult.put(srcFile, finalScore);
 			}
 		}
@@ -356,13 +376,13 @@ public class RVSMCalc {
 	   
 		RVSMCalc obj=new RVSMCalc();
 		//For Mac
-		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 		
 		
 		//For Windows
-		//String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		//String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
+		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
+		String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
 	
 		
 		

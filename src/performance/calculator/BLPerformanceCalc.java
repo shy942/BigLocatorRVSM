@@ -178,7 +178,7 @@ public class BLPerformanceCalc {
 				}
 			}
 		}
-		System.out.println("Top@10" + found);
+		System.out.println("Top@10   " + found);
 		return (double) found / this.selectedBugs.size();
 	}
 
@@ -307,8 +307,8 @@ public class BLPerformanceCalc {
 
 		int TOPK = 10;
 
-		// String fileName="./data/buglocator/eclipseoutput.txt";
-		String resultFile = "./data/Results/BugLocatorJuly29.txt";
+		String resultFile="./data/Results/eclipseoutput.txt";
+		//String resultFile = "./data/Results/BugLocatorJuly29.txt";
 		String goldFile = "./data/gitInfoNew.txt";
 		BLPerformanceCalc bcalc = new BLPerformanceCalc(resultFile, TOPK,
 				goldFile);

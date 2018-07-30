@@ -102,7 +102,27 @@ public class SimiScoreCalc {
 			}
 			return cosineScoreHM;
 	}
+	public Double getMaxLength(ArrayList<String> LengthList)
+	{
+		Double MaxLen=(Double) 0.0;
+		for(String len:LengthList)
+		{
+			Double lengthInt=Double.valueOf(len);
+			if(MaxLen<lengthInt)MaxLen=lengthInt;
+		}
+		return MaxLen;
+	}
 	
+	public Double getMinLength(ArrayList<String> LengthList)
+	{
+		Double MinLen=(Double) 100000.0;
+		for(String len:LengthList)
+		{
+			Double lengthInt=Double.valueOf(len);
+			if(MinLen>lengthInt)MinLen=lengthInt;
+		}
+		return MinLen;
+	}
 	
 	public HashMap<String, Double> SimilarityCalc(String queryContent)
 	{
@@ -143,16 +163,35 @@ public class SimiScoreCalc {
 		}
 	}
 		//MiscUtility.showResult(20, MiscUtility.sortByValues(similarityScoreHM));
+		ArrayList<String> lengthList=new ArrayList<>();
 		for(String file: similarityScoreHM.keySet())
 		{
+			
+			Double score=similarityScoreHM.get(file);
+			lengthList.add(String.valueOf(score));
+		}
+		
+		double maxLength=Double.valueOf(this.getMaxLength(lengthList));
+		double minLength=Double.valueOf(this.getMinLength(lengthList));
+		
+		for(String file:similarityScoreHM.keySet())
+		{
 			double score=similarityScoreHM.get(file);
-			int length=sourceLengthInfo.get(file);
-			double avgScore=score/length;
-			similarityScoreHM.put(file, avgScore);
+		
+			
+			Double N=(score-minLength)/(maxLength-minLength);
+			
+			score=N;
+			if(score>1.0){
+			System.out.println(maxLength+" "+minLength);
+			System.out.println(" score  "+score);
+			System.out.println("N  "+N);}
+			similarityScoreHM.put(file, N);
 		}
 	
 		//MiscUtility.showResult(10, similarityScoreHM);
-		return similarityScoreHM;
+		return MiscUtility.sortByValues(similarityScoreHM);
+		
 }
 	
 	
