@@ -180,19 +180,18 @@ public class RVSMCalc {
 			{
 				double score=sortedRVSMsvoreResult.get(key);
 			
-				
-				Double N=(score-minLength)/(maxLength-minLength);
-				
-				
-				//if(score>1.0)
+				if(score>0.0)
 				{
-					System.out.println(maxLength+" "+minLength);
-					System.out.println(" score  "+score);
-					System.out.println("N  "+N);
+					Double N=(score-minLength)/(maxLength-minLength);
+					//System.out.println(maxLength+" "+minLength);
+					//System.out.println(" score  "+score);
+					//System.out.println("N  "+N);
+					score=N;
+					//System.out.println("After normalization score "+score);
+					sortedRVSMsvoreResult.put(key, score);
 				}
-				score=N;
-				System.out.println("After normalization score "+score);
-				sortedRVSMsvoreResult.put(key, score);
+				
+				
 			}
 		
 			//MiscUtility.showResult(10, sortedRVSMsvoreResult);
@@ -225,7 +224,7 @@ public class RVSMCalc {
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/BugLocatorJuly30-Avg.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/BugLocatorJuly30-night-Avg.txt", totalResult);
 	}
 	
 	
@@ -376,13 +375,13 @@ public class RVSMCalc {
 	   
 		RVSMCalc obj=new RVSMCalc();
 		//For Mac
-		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 		
 		
 		//For Windows
-		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
+		//String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
+		//String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
 	
 		
 		

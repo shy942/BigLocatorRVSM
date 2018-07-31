@@ -44,7 +44,7 @@ public class CalculateLocalizationPerformance {
 		//MiscUtility.convertNumbertoSourceFile("./data/Results/finalResultTest1.txt","./data/changeset-pointer/ID-SourceFile.txt","./data/Results/FinalResultSidTest1.txt");
 		
 		
-		obj.ActualResultSets=RetrieveFinalSets("./data/Results/BugLocatorJuly30-Avg.txt"); 	
+		obj.ActualResultSets=RetrieveFinalSets("./data/Results/BugLocatorJuly30-night-Avg.txt"); 	
 	
 		
 		int top_n=5;
