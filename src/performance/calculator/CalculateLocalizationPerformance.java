@@ -35,7 +35,7 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/100-1000-rankedResult.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/BugLocatorJuly31.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
 		obj.ActualResultSets=obj.RetrieveFinalSets(obj.actualSetPath); 	
 	
@@ -45,24 +45,30 @@ public class CalculateLocalizationPerformance {
 		MiscUtility.showResult(100, finalRankedResult);
 		
 		//Compute MAP
-		
+		obj.ComputeMAP(finalRankedResult);
 		//Comupte MRR
 	}
 
 	
 	private void ComputeMAP(HashMap<String, ArrayList<String>>finalRankedResult)
 	{
-		Double AP=0.0;
+		Double SumAP=0.0;
 		for(String bugID:finalRankedResult.keySet())
 		{
 			Double Prec=0.0;
 			ArrayList<String> rankedList=finalRankedResult.get(bugID);
+			int count=0;
 			for(String rankstr:rankedList)
 			{
 				int rank=Integer.valueOf(rankstr);
-				
+				count++;
+				Prec+=Double.valueOf(count)/Double.valueOf(rank);
 			}
+			Double AP=Prec/rankedList.size();
+			SumAP+=AP;
 		}
+		Double MAP=SumAP/finalRankedResult.size();
+		System.out.println(MAP);
 	}
 	
 	
@@ -127,17 +133,17 @@ public class CalculateLocalizationPerformance {
 	        				String trueSetsFilePath=listFromTrueSets.get(j);
 	        				if(resultedFilePath.equalsIgnoreCase(trueSetsFilePath)==true){
 	        					found=1;
-	        					System.out.println(bugID+" "+resultedFilePath+" "+(j+1));
+	        					//System.out.println(bugID+" "+resultedFilePath+" "+(i+1));
 	        					ArrayList<String> resultList;
 	        					if(finalRankedResult.containsKey(bugID))
 	        					{
 	        						resultList=finalRankedResult.get(bugID);
-	        						resultList.add(String.valueOf(j+1));
+	        						resultList.add(String.valueOf(i+1));
 	        					}
 	        					else
 	        					{
 	        						resultList=new ArrayList<>();
-	        						resultList.add(String.valueOf(j+1));
+	        						resultList.add(String.valueOf(i+1));
 	        					}
 	        					finalRankedResult.put(bugID, resultList);
 	        					break;
