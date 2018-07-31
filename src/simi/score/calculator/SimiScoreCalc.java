@@ -16,28 +16,23 @@ public class SimiScoreCalc {
 	public String bugFile;
 	public HashMap<String, String> sourceContentHM;
 	public HashMap<String, String> bugContentHM;
-	//public HashMap<String, Double> cosineScoreHM;
-	//public HashMap<String, Double> similarityScoreHM;
+	
 	HashMap<Integer, ArrayList<String>> goldMap;
  	
 	public SimiScoreCalc( HashMap<String, String> sourceContentHM, HashMap<String, String> bugContentHM)
 	{
 		this.sourceContentHM=sourceContentHM;
 		this.bugContentHM=bugContentHM;
-		//this.cosineScoreHM=new HashMap<>();
-		//this.similarityScoreHM=new HashMap<>();
 		this.goldMap=this.loadGoldsetMap("./Data/gitInfoNew.txt");
 	}
 	
 	public SimiScoreCalc(String sourceCodeFile, String bugFile)
 	{
 		this.sourceCodeFile=sourceCodeFile;
-		//this.queryContent=queryContent;
 		this.bugFile=bugFile;
 		this.sourceContentHM=new HashMap<>();
 		this.bugContentHM=new HashMap<>();
-		//this.cosineScoreHM=new HashMap<>();
-		//this.similarityScoreHM=new HashMap<>();
+		
 	}
 	
 	protected HashMap<Integer, ArrayList<String>> loadGoldsetMap(String goldFile) {
@@ -93,7 +88,7 @@ public class SimiScoreCalc {
 						str1,str2);
 						//queryContent, bugContent);
 				//System.out.println(cosineSimilarity);
-				if (cosineSimilarity > 0) {
+				if (cosineSimilarity > 0.0) {
 					String bugIDfound = bugID;
 					
 					if(cosineSimilarity>1.0)System.out.println(bugIDfound+" "+cosineSimilarity);
@@ -171,6 +166,8 @@ public class SimiScoreCalc {
 			lengthList.add(String.valueOf(score));
 		}
 		
+		
+		//Normalize Similarity score
 		double maxLength=Double.valueOf(this.getMaxLength(lengthList));
 		double minLength=Double.valueOf(this.getMinLength(lengthList));
 		
@@ -182,11 +179,13 @@ public class SimiScoreCalc {
 			Double N=(score-minLength)/(maxLength-minLength);
 			
 			score=N;
-			if(score>1.0){
-			System.out.println(maxLength+" "+minLength);
-			System.out.println(" score  "+score);
-			System.out.println("N  "+N);}
-			similarityScoreHM.put(file, N);
+			if(score>0.0)
+			{
+				//System.out.println(maxLength+" "+minLength);
+				//System.out.println(" score  "+score);
+				//System.out.println("N  "+N);
+				similarityScoreHM.put(file, N);
+			}
 		}
 	
 		//MiscUtility.showResult(10, similarityScoreHM);
