@@ -1,0 +1,2 @@
+workaround multi editor change int workaround tab folder child visibility false notification multi editor change int check workaround editor activated restored previous session removed
+ 

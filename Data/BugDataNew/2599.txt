@@ -1,0 +1,2 @@
+status doesn display characters create project character select navigator status displays vertical bars place hoi characters project properties dialog project references proper japanese font font properties longr issue fixed build fragment
+ 

@@ -1,0 +1,2 @@
+view mgmt tool tips views panes tooltips describing views mouse hovers pane tooltips views distracting add tool text desktop set tool text string desktop site change time
+ 

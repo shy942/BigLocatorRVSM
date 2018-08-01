@@ -1,0 +1,2 @@
+unexpected content menu behavior note uchi uchida kenji seq rel action open scenarios context menu unexpected position scenario click folder navigator change active view thumbnail view key leave mouse cursor navigator press shift key scenario open html file designer switch view source view place mouse cursor workbench window press shift key expect menu selected object caret
+ 

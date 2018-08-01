@@ -1,0 +1,2 @@
+dialogs weird layout jar packager warning dialog sdk jar packager creates warnings export compilation problems warning dialog resize dialog window observe vertical space distributed warnings list newly space behavior org eclipse jface dialogs error dialog moved
+ 

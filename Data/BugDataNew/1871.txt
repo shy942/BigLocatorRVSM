@@ -1,0 +1,2 @@
+file manager examples references ibm eclipse internal class method reference ibm eclipse internal reserve change classes internal package time errors introduced plugin remove reference log require public functionality session composite table workbook text workbook table workbook session composite text workbook workbook table workbook fixed
+ 

@@ -1,0 +1,2 @@
+project wizard selection class resource plugin xml basic project wizard extension specifies selection class org eclipse core resources resource needed wizard ignores selection
+ 

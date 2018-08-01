@@ -1,0 +1,2 @@
+rebuild prompt saving rebuild project file saved workbench prompt user save open workbench create java project click project select class class default package public static void main editing add import java system println rebuild prompt save performing resource operations dirty editor open rebuild saves editor warning workbench preference saving build nice noticed hand
+ 

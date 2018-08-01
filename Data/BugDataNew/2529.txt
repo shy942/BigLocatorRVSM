@@ -1,0 +1,2 @@
+navigator open close project create projects select close select notice open project menu item close project enabled
+ 

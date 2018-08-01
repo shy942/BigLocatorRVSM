@@ -1,0 +1,2 @@
+editor paint toolbar editor activated create doc file create bmp file switch bettween editors works file navigator switch selected file content file painted editor toolbars status bar understand bit model editor activated action toolbar case local tool bar nice visual efect
+ 

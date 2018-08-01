@@ -1,0 +1,2 @@
+face strange dialog cell editor behavior open usr file select person content outline open properties view workbench small properties view horizontal scroll bar showing click hair color property activate cell editor press escape cell editor close left arrow note view scrolls cell editor remains stationary
+ 

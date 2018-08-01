@@ -18,11 +18,6 @@ import utility.MiscUtility;
 
 
 public class RVSMCalc {
-
-	
-	
-	
-	
 	HashMap<String, Double> IDFmap;
 	HashMap<String, HashMap<String, Double>> SourceTFInfo;
 	HashMap<String, String> SourceInfoForSimiCalc;
@@ -31,8 +26,6 @@ public class RVSMCalc {
     
 	
 	public RVSMCalc() {
-		
-		
 		this.IDFmap=new HashMap<>();
 		this.SourceTFInfo=new HashMap<>();
 		this.SourceInfoForSimiCalc=new HashMap<>();
@@ -116,7 +109,7 @@ public class RVSMCalc {
 		for(String queryInfo : this.QueryInfo.keySet())
 		{
 			count++;
-			if(count>100) break; 
+			//if(count>100) break; 
 			
 			String queryContent=this.QueryInfo.get(queryInfo);
 			//Similarty Score Calculation;
@@ -169,7 +162,7 @@ public class RVSMCalc {
 			//Normalize rVSM score
 			double maxLength=Double.valueOf(this.getMaxLength(lengthList));
 			double minLength=Double.valueOf(this.getMinLength(lengthList));
-			System.out.println(maxLength+" "+minLength);
+			//System.out.println(maxLength+" "+minLength);
 			for(String key:sortedRVSMsvoreResult.keySet())
 			{
 				double score=sortedRVSMsvoreResult.get(key);
@@ -177,11 +170,7 @@ public class RVSMCalc {
 				if(score>0.0)
 				{
 					Double N=(score-minLength)/(maxLength-minLength);
-					//System.out.println(maxLength+" "+minLength);
-					//System.out.println(" score  "+score);
-					//System.out.println("N  "+N);
 					score=N;
-					//System.out.println("After normalization score "+score);
 					sortedRVSMsvoreResult.put(key, score);
 				}
 			}
@@ -189,8 +178,7 @@ public class RVSMCalc {
 			//MiscUtility.showResult(10, sortedRVSMsvoreResult);
 			
 			//Now combine both RVSM and Simi socres
-			HashMap<String,Double> finalSortedCombonedResult=sortedRVSMsvoreResult;
-			//=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
+			HashMap<String,Double> finalSortedCombonedResult=CombinedRVSMandSimiScoreHM(maxLength,minLength,queryInfo, sortedSimiResult, sortedRVSMsvoreResult);
 			
 			
 			ArrayList<String> tempResults=new ArrayList<String>();
@@ -217,7 +205,7 @@ public class RVSMCalc {
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/BugLocatorJuly31.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/BugLocatorAugust1st.txt", totalResult);
 	}
 	
 	
@@ -354,17 +342,19 @@ public class RVSMCalc {
 	   
 		RVSMCalc obj=new RVSMCalc();
 		//For Mac
-		//String soureInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		//String sourceInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
 		//String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 		
 		
 		//For Windows
-		String soureInfo="F:\\PhD\\Data\\SourceForBL\\";
-		String bugInfo="F:\\PhD\\Data\\BugDataNew\\";
+		//String sourceInfo="E:\\PhD\\Data\\SourceForBL\\";
+		//String bugInfo="E:\\PhD\\Data\\BugDataNew\\";
 	
+		//For testing
+		String sourceInfo="./Data/SourceForBL/";
+		String bugInfo="./Data/BugDataNew/";
 		
-		
-		obj.LoadSourceTFhm(soureInfo);
+		obj.LoadSourceTFhm(sourceInfo);
 		obj.LoadSourceIDF();
 		obj.LoadQueryInfo(bugInfo);
 		

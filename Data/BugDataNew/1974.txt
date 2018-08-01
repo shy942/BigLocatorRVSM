@@ -1,0 +1,2 @@
+file takes seconds open create java project expand project select classpath invoke open default text editor result takes seconds editor open close editor repeat step result seconds slow good productivity time opened default editor seconds class loading optimize close editor open file opens reproduce step windows
+ 

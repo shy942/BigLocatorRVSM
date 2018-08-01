@@ -1,0 +1,2 @@
+tasks cell editor close deactivation bug strange behavior add task task list click description edit cell editor active click navigator notice activation navigator cell editor task list open click title tasks move scroll bar notice cell editor disappers momentarily scrolling click column headings change order notice editor remains problem occurs priority editor active expected behavior click task list cell editor deactivated deactivated
+ 

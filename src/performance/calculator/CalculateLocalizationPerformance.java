@@ -35,7 +35,7 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/BugLocatorJuly31.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/BugLocatorAugust1st.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
 		obj.ActualResultSets=obj.RetrieveFinalSets(obj.actualSetPath); 	
 	
@@ -45,12 +45,12 @@ public class CalculateLocalizationPerformance {
 		MiscUtility.showResult(100, finalRankedResult);
 		
 		//Compute MAP
-		obj.ComputeMAP(finalRankedResult);
+		obj.ComputeMAP(finalRankedResult,obj);
 		//Comupte MRR
+		obj.ComputeMRR(finalRankedResult, obj);
 	}
-
 	
-	private void ComputeMAP(HashMap<String, ArrayList<String>>finalRankedResult)
+	private void ComputeMAPtopK (HashMap<String, ArrayList<String>>finalRankedResult, CalculateLocalizationPerformance obj, int topK)
 	{
 		Double SumAP=0.0;
 		for(String bugID:finalRankedResult.keySet())
@@ -65,12 +65,56 @@ public class CalculateLocalizationPerformance {
 				Prec+=Double.valueOf(count)/Double.valueOf(rank);
 			}
 			Double AP=Prec/rankedList.size();
+			//System.out.println("AP: "+AP);
 			SumAP+=AP;
 		}
-		Double MAP=SumAP/finalRankedResult.size();
-		System.out.println(MAP);
+		Double MAP=SumAP/Double.valueOf(obj.ActualResultSets.size());
+		System.out.println("MAP: "+MAP);
 	}
 	
+	private void ComputeMAP(HashMap<String, ArrayList<String>>finalRankedResult, CalculateLocalizationPerformance obj)
+	{
+		Double SumAP=0.0;
+		for(String bugID:finalRankedResult.keySet())
+		{
+			Double Prec=0.0;
+			ArrayList<String> rankedList=finalRankedResult.get(bugID);
+			int count=0;
+			for(String rankstr:rankedList)
+			{
+				int rank=Integer.valueOf(rankstr);
+				count++;
+				Prec+=Double.valueOf(count)/Double.valueOf(rank);
+			}
+			Double AP=Prec/rankedList.size();
+			//System.out.println("AP: "+AP);
+			SumAP+=AP;
+		}
+		Double MAP=SumAP/Double.valueOf(obj.ActualResultSets.size());
+		System.out.println("MAP: "+MAP);
+	}
+	private void ComputeMRR(HashMap<String, ArrayList<String>>finalRankedResult, CalculateLocalizationPerformance obj)
+	{
+		Double MRRsum=0.0;
+		for(String bugID:finalRankedResult.keySet())
+		{
+			Double R=0.0;
+			ArrayList<String> rankedList=finalRankedResult.get(bugID);
+			
+			int count=0;
+			for(String rankstr:rankedList)
+			{
+				int rank=Integer.valueOf(rankstr);
+				
+				R+=1.0/Double.valueOf(rank);
+			}
+			Double AvgR=R/Double.valueOf(rankedList.size());
+			//System.out.println("AvgR: "+AvgR);
+			MRRsum+=AvgR;
+		}
+		Double MRR=MRRsum/Double.valueOf(obj.ActualResultSets.size());
+		System.out.println("MRR: "+MRR);
+	}
 	
 	
 	private HashMap<String, ArrayList<String>> RetrieveFinalSets(
@@ -123,10 +167,10 @@ public class CalculateLocalizationPerformance {
 	        	int count=0;
 	        	for(int i=0;i<listFromActualResult.size();i++){
 	        		count++;
-	        		if(count>10) {
-	        			System.out.println(count+"----------------------------------------------------");
-	        			break;
-	        		}
+	        		//if(count>10) {
+	        			//System.out.println(count+"----------------------------------------------------");
+	        			//break;
+	        		//}
 	        		
 	        		String resultedFilePath=listFromActualResult.get(i);
 	        			for(int j=0;j<listFromTrueSets.size();j++){

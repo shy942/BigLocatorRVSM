@@ -1,0 +1,2 @@
+tasks task view visible build hidden scenario working java perspective configuration java perspective stack views bottom console visible top search result task list build errors don result build operation confusing manually bring tasks view front build operation bring task view front automatically notice console view search result view support auto raise option consistent console view conditional based user preference search result view unconditionally
+ 

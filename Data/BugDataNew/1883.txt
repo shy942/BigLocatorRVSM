@@ -1,0 +1,2 @@
+properties view property view sorting property viewer hard codes alphabetical sorting properties based property order don display order property source viewer sorter mechanism viewer framework required attributes optional required set addition order attributes defined extension point generally alphabetical
+ 

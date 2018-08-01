@@ -1,0 +1,1 @@
+org eclipse core commands attribute constants special meanings these attributes communicate extra handler command command manager handler attributes attribute indicating handler handled this intended compatibility workbench code retarget action code handler handling command treated command behave handler string handled

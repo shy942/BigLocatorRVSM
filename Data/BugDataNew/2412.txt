@@ -1,0 +1,2 @@
+reference internal class workbench prefs workbench exposes number preference constant workbench preference constants unfortately access constants reference workbench plugin class rely underlying core support defined plugin class bogus expose constants surely expose object preference store workbench
+ 

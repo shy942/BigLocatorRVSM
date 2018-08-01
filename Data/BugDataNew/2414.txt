@@ -1,0 +1,2 @@
+save change file edited open doc file change contents save file xxxx doc file edited xxxx doc editor opened file readme doc save editor change input file save editor contents saved file editor input switched file subsequent saves modify original file file
+ 

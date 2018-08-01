@@ -1,0 +1,2 @@
+editor mgmt open type editor file open reproduce steps scripted resource editor opens files default basic project file test xml editor scripted resource editor totally ignores file content select test xml navigator choose open default text editor reactivating scripted resource editor searching existing open file editor types open editor file editor type
+ 

@@ -1,0 +1,2 @@
+preferences test suite entry failed preference java project project properties order skipping java build path opening build path showing properly title note managing reopen properties dialog reverse order java info reopen select java info works caused error dialog log filed unclear caused problem resilient affect caused problem properties throws team fixed probem handle error case
+ 

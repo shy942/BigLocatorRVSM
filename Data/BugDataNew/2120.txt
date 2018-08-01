@@ -1,0 +1,2 @@
+file list persisted sessions start workbench open files notice files file menu list shutdown workbench restart notice files file menu list files persisted sessions note persistable element peek implementation underlying resource editor input resource
+ 
