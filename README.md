@@ -1,7 +1,9 @@
 # BigLocatorRVSM
 Go to rvsm.calculator package
 open RVSMCalc.java
-Run this
+Run this.
+
+Note that I am keeping data in local pc. Because they are so big.
 
 This is the main file where I call simi.score.calculator.SimiScoreCalc.java for computing SimiScore 
 Here, I did normalization and combine both soce
