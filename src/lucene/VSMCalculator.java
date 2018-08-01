@@ -2,7 +2,6 @@ package lucene;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import corpus.maker.BugReportPreprocessor;
 
 public class VSMCalculator {
@@ -10,20 +9,20 @@ public class VSMCalculator {
 	String content;
 	BugReportPreprocessor bpp;
 	HashMap<String, Integer> tfMap = new HashMap<String, Integer>();
-	
-	
-	//int year = 2011;
-	int totalTerms=0;
+
+	// int year = 2011;
+	int totalTerms = 0;
 
 	public VSMCalculator(String content) {
 		this.content = content;
 		this.bpp = new BugReportPreprocessor(content);
-		this.totalTerms=0;
+		this.totalTerms = 0;
 	}
 
-	public  HashMap<String, Integer> getTF() {
+	// provides TF within a document
+	public HashMap<String, Integer> getTF() {
 		String preprocessed = bpp.performNLP();
-		String[] words = preprocessed.split(" ");
+		String[] words = preprocessed.split("\\s+");
 		for (String token : words) {
 			this.totalTerms++;
 			if (tfMap.containsKey(token)) {
@@ -33,31 +32,27 @@ public class VSMCalculator {
 				this.tfMap.put(token, 1);
 			}
 		}
-		//System.out.println("From VSMCalculator: "+totalTerms);
+		// System.out.println("From VSMCalculator: "+totalTerms);
 		return tfMap;
 	}
-	
-	public int getTotalTerms()
-	{
+
+	public int getTotalTerms() {
 		return this.totalTerms;
 	}
-	
-	public HashMap<String, Double> getLogTF()
-	{
-		HashMap<String, Double> logTFmap=new HashMap<>();
-		this.tfMap=this.getTF();
-		for(String key: tfMap.keySet())
-		{
-			int tf=tfMap.get(key);
-			Double logTF=Math.log(Double.valueOf(tf))+1;
+
+	// provides logarithmic version of the TF
+	public HashMap<String, Double> getLogTF() {
+		HashMap<String, Double> logTFmap = new HashMap<>();
+		this.tfMap = this.getTF();
+		for (String key : tfMap.keySet()) {
+			int tf = tfMap.get(key);
+			Double logTF = Math.log(Double.valueOf(tf)) + 1;
 			logTFmap.put(key, logTF);
 		}
 		return logTFmap;
 	}
 
-	public int getTotalNoTerms(){
-		return this.totalTerms;
-	}
+	// this should be called only once for a corpus
 	public HashMap<String, Double> getDF() {
 		// calculate IDF
 		HashMap<String, Double> dfMap = new HashMap<String, Double>();
@@ -73,6 +68,10 @@ public class VSMCalculator {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+		// test every class you design, this is called unit testing
+		String content = "This commands shows query improvement, query worsening and query preserving statistics across all 6 subject systems (as shown in **Table 9**).";
+		VSMCalculator vsmCalc = new VSMCalculator(content);
+		System.out.println(vsmCalc.getLogTF().size());
+		System.out.println(vsmCalc.getDF().size());
 	}
 }
