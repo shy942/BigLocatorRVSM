@@ -205,7 +205,7 @@ public class RVSMCalc {
 		}
 		//return this.hm;
 		System.out.println("Total Query: "+count);
-		ContentWriter.writeContent("./Data/Results/BugLocatorAugust1st.txt", totalResult);
+		ContentWriter.writeContent("./Data/Results/BugLocatorAugust1stStemmedData.txt", totalResult);
 	}
 	
 	
@@ -351,8 +351,8 @@ public class RVSMCalc {
 		//String bugInfo="E:\\PhD\\Data\\BugDataNew\\";
 	
 		//For testing
-		String sourceInfo="./Data/SourceForBL/";
-		String bugInfo="./Data/BugDataNew/";
+		String sourceInfo="./Data/ProcessedSourceForBL/";
+		String bugInfo="./Data/ProcessedBugData/";
 		
 		obj.LoadSourceTFhm(sourceInfo);
 		obj.LoadSourceIDF();

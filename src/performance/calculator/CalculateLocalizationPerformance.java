@@ -35,14 +35,14 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/BugLocatorAugust1st.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/BugLocatorAugust1stStemmedData.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
 		obj.ActualResultSets=obj.RetrieveFinalSets(obj.actualSetPath); 	
 	
 		
 		//Compute TopK percentage
 		HashMap<String, ArrayList<String>>finalRankedResult=obj.ComputePerformancePercent(10,obj);
-		MiscUtility.showResult(100, finalRankedResult);
+		//MiscUtility.showResult(100, finalRankedResult);
 		
 		//Compute MAP
 		obj.ComputeMAP(finalRankedResult,obj);
@@ -164,13 +164,8 @@ public class CalculateLocalizationPerformance {
 	        	ArrayList <String> listFromTrueSets=obj.gitResults.get(bugID);
 	        	no_of_bug_matched++;
 	        	//Look for top-K
-	        	int count=0;
+	      
 	        	for(int i=0;i<listFromActualResult.size();i++){
-	        		count++;
-	        		//if(count>10) {
-	        			//System.out.println(count+"----------------------------------------------------");
-	        			//break;
-	        		//}
 	        		
 	        		String resultedFilePath=listFromActualResult.get(i);
 	        			for(int j=0;j<listFromTrueSets.size();j++){

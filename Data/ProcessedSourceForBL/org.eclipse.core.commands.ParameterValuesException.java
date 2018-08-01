@@ -1,0 +1,1 @@
+org core command org core command common command excep signal occur instanc code paramet valu code applic base registri core creat code execut exten code applic excep signifi gener initi paramet valu excep command excep gener serial version serial version creat instanc messag param messag messag code null code param code null code paramet valu excep string messag throwabl messag

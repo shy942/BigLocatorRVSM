@@ -8,7 +8,7 @@ import corpus.maker.BugReportPreprocessor;
 public class VSMCalculator {
 
 	String content;
-	BugReportPreprocessor bpp;
+	//BugReportPreprocessor bpp;
 	HashMap<String, Integer> tfMap = new HashMap<String, Integer>();
 	
 	
@@ -17,13 +17,13 @@ public class VSMCalculator {
 
 	public VSMCalculator(String content) {
 		this.content = content;
-		this.bpp = new BugReportPreprocessor(content);
+		//this.bpp = new BugReportPreprocessor(content);
 		this.totalTerms=0;
 	}
 
 	public  HashMap<String, Integer> getTF() {
-		String preprocessed = bpp.performNLP();
-		String[] words = preprocessed.split(" ");
+		//String preprocessed = bpp.performNLP();
+		String[] words = this.content.split(" ");
 		for (String token : words) {
 			this.totalTerms++;
 			if (tfMap.containsKey(token)) {

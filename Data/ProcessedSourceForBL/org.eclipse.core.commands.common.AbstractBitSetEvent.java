@@ -1,0 +1,1 @@
+org core command common event carri valu singl integ bit set abstract bit set event collec bit repres valu chang bit set code code properti chang assum correctli initi superconstructor chang valu

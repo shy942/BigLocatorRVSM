@@ -1,0 +1,1 @@
+unexpect content menu behavior note uchi uchida kenji seq rel action open scenario context menu unexpect position scenario folder navig activ view thumbnail view kei leav mous cursor navig press shift kei scenario open html file design switch view sourc view place mous cursor workbench window press shift kei expect menu select object caret
