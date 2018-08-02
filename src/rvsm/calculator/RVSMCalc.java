@@ -104,10 +104,12 @@ public class RVSMCalc {
 
 		int maxLen = 100;
 		int minLen = 5;
+		int docLength=18;
+		
 
 		HashMap<String, Double> IDFMap = new TFIDFCalculator()
 				.calculateIDFOnly();
-		RVSMCalc vsmCalc = new RVSMCalc(sourceDoc, IDFMap, query, maxLen,
+		RVSMCalc vsmCalc = new RVSMCalc(sourceDoc, IDFMap, docLength, query, maxLen,
 				minLen);
 		System.out.println(vsmCalc.calculateRVSMScore());
 
