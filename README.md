@@ -1,4 +1,4 @@
-# BigLocatorRVSM
+# BugLocatorRVSM
 Go to rvsm.calculator package
 open RVSMCalc.java
 Run this.
