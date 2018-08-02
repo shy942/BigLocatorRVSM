@@ -1,0 +1,1 @@
+org core command command paramet declar type intend implem implementor link paramet support paramet type type paramet return link paramet type command paramet code null code paramet declar type note paramet type return undefin paramet type command paramet code null code paramet declar type paramet type paramet type

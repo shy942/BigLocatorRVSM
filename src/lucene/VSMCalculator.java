@@ -21,7 +21,7 @@ public class VSMCalculator {
 
 	// provides TF within a document
 	public HashMap<String, Integer> getTF() {
-		String preprocessed = bpp.performNLP();
+		String preprocessed = bpp.performNLP(content);
 		String[] words = preprocessed.split("\\s+");
 		for (String token : words) {
 			this.totalTerms++;
@@ -71,7 +71,7 @@ public class VSMCalculator {
 		// test every class you design, this is called unit testing
 		String content = "This commands shows query improvement, query worsening and query preserving statistics across all 6 subject systems (as shown in **Table 9**).";
 		VSMCalculator vsmCalc = new VSMCalculator(content);
-		System.out.println(vsmCalc.getLogTF().size());
-		System.out.println(vsmCalc.getDF().size());
+		System.out.println(vsmCalc.getLogTF());
+		System.out.println(vsmCalc.getDF());
 	}
 }

@@ -48,34 +48,34 @@ public class ContentLoader {
 
 	public static ArrayList<String> getAllKeywords(String fileName) {
 		ArrayList<String> temp = new ArrayList<>();
-		
-			try {
-				BufferedReader breader = new BufferedReader(new FileReader(fileName));
-				while (breader.ready()) {
-					String line = breader.readLine().trim();
-					if (!line.isEmpty()) {
-						String[] spilter=line.split(" ");
-						for(String token:spilter)
-						{
-							if (token.matches("\\p{Punct}+|\\d+|\\s+")||token.contains(".txt"))
-								continue;
-							else {
-								token=token.replaceAll("�", "");
-								token=token.replaceAll("�", "");
-								temp.add(token);
-							}
+
+		try {
+			BufferedReader breader = new BufferedReader(
+					new FileReader(fileName));
+			while (breader.ready()) {
+				String line = breader.readLine().trim();
+				if (!line.isEmpty()) {
+					String[] spilter = line.split(" ");
+					for (String token : spilter) {
+						if (token.matches("\\p{Punct}+|\\d+|\\s+")
+								|| token.contains(".txt"))
+							continue;
+						else {
+							token = token.replaceAll("�", "");
+							token = token.replaceAll("�", "");
+							temp.add(token);
 						}
-					
-					
 					}
+
 				}
-					breader.close();
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			
+			breader.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return temp;
 	}
 
@@ -83,6 +83,22 @@ public class ContentLoader {
 		String content = readContentProcessedSourceCode(fileName);
 		String[] tokens = content.split("\\s+");
 		return tokens;
+	}
+
+	public static ArrayList<String> getDocTokensAll(String fileName) {
+		ArrayList<String> tokenList = new ArrayList<>();
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(new File(fileName));
+			while (scanner.hasNext()) {
+				tokenList.add(scanner.next());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		scanner.close();
+		return tokenList;
 	}
 
 	public static String readContentSimple(String inFile) {

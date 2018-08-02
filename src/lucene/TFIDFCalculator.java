@@ -170,7 +170,7 @@ public class TFIDFCalculator {
 		} catch (Exception exc) {
 			// handle the exception
 		}
-		MiscUtility.showResult(10, this.idfMap);
+		//MiscUtility.showResult(10, this.idfMap);
 		return this.idfMap;
 	}
 

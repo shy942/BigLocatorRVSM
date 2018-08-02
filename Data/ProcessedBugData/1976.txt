@@ -1,0 +1,1 @@
+navig open file navig visibl close navig open file file open action select file wildcard open default editor accept editor case combo box select editor
