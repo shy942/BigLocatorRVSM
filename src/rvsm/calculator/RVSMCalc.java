@@ -109,9 +109,11 @@ public class RVSMCalc {
 
 		HashMap<String, Double> IDFMap = new TFIDFCalculator()
 				.calculateIDFOnly();
+
 		RVSMCalc vsmCalc = new RVSMCalc(sourceDoc, IDFMap, docLength, query, maxLen,
 				minLen);
 		System.out.println(vsmCalc.calculateRVSMScore());
+
 
 		// For Mac
 		// String

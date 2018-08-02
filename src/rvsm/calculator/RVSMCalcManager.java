@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import lucene.TFIDFCalculator;
 import utility.ContentLoader;
+import utility.ContentWriter;
 import utility.MiscUtility;
 
 public class RVSMCalcManager {
@@ -73,8 +74,9 @@ public class RVSMCalcManager {
 	}
 
 	protected void calculatRVSM() {
+		ArrayList<String> finalResult=new ArrayList<>();
 		int maxDocLength = getMaxDocLength();
-		int minDocLength = getMinDocLength();
+		int minDocLength = getMinDocLength(); 
 		for (String queryKey : this.queryMap.keySet()) {
 			String queryDocument = this.queryMap.get(queryKey);
 			HashMap<String, Double> tempScoreMap = new HashMap<>();
@@ -85,14 +87,29 @@ public class RVSMCalcManager {
 				double score = rcalc.calculateRVSMScore();
 				tempScoreMap.put(srcFileKey, score);
 			}
-			tempScoreMap = normalizeMe(tempScoreMap);
+			tempScoreMap = normalizeMe(tempScoreMap); 
 			// now store the VSM score
 			this.rVSMScoreMap.put(queryKey, tempScoreMap);
-			System.out.println(tempScoreMap);
-			System.out.println("Done:" + queryKey);
+			HashMap<String, Double> sortedScore=MiscUtility.sortByValues(tempScoreMap);
+			finalResult.addAll(getSortedTopKResult(10, queryKey, sortedScore));
+			
+			System.out.println("Done:" + queryKey); 
 		}
+		ContentWriter.writeContent("./Data/Results/Masud1Alldata.txt", finalResult);
 	}
 
+	protected ArrayList<String> getSortedTopKResult(int topK, String queryKey, HashMap<String, Double> sortedScore)
+	{
+		ArrayList<String> finalResult=new ArrayList<>();
+		;
+		for(String srcID:sortedScore.keySet())
+		{
+			
+			finalResult.add(queryKey+","+srcID+","+sortedScore.get(srcID));
+		}
+		return finalResult;
+		
+	}
 	protected HashMap<String, Double> normalizeMe(
 			HashMap<String, Double> tempMap) {
 		double max = 0;
@@ -114,19 +131,18 @@ public class RVSMCalcManager {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// For Mac
-		// String
-		// sourceInfo="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		// String bugInfo="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		 String sourceFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		 String bugReportFolder="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 
 		// For Windows
-		// String sourceInfo="E:\\PhD\\Data\\SourceForBL\\";
-		// String bugInfo="E:\\PhD\\Data\\BugDataNew\\";
+		// String sourceFolder="E:\\PhD\\Data\\SourceForBL\\";
+		// String bugReportFolder="E:\\PhD\\Data\\BugDataNew\\";
 
-		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis(); 
 
 		// For testing
-		String sourceFolder = "./Data/SourceForBL";
-		String bugReportFolder = "./Data/BugDataNew";
+		//String sourceFolder = "./Data/SourceForBL";
+		//String bugReportFolder = "./Data/BugDataNew";
 
 		RVSMCalcManager manager = new RVSMCalcManager(sourceFolder,
 				bugReportFolder);

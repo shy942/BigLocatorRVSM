@@ -35,7 +35,7 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/BugLocatorAugust1stStemmedData.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/Masud1.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
 		obj.ActualResultSets=obj.RetrieveFinalSets(obj.actualSetPath); 	
 	
