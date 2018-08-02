@@ -3,11 +3,12 @@ package performance.calculator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import utility.ContentLoader;
+import utility.MiscUtility;
 
-public class BLPerformanceCalc {
+public class BLPerformanceCalcMe {
 
 	String repoName;
-	static String resultFile;
+	String resultFile;
 	int TOPK;
 	ArrayList<Integer> selectedBugs;
 	HashMap<String, Integer> rankMap;
@@ -15,17 +16,17 @@ public class BLPerformanceCalc {
 	boolean IROnly;
 	HashMap<Integer, ArrayList<String>> goldMap;
 
-	public BLPerformanceCalc(String outputFileName, int TOPK, String goldFile) {
+	public BLPerformanceCalcMe(String outputFileName, int TOPK, String goldFile) {
 		this.resultFile = outputFileName;
 		this.TOPK = TOPK;
 		this.selectedBugs = new ArrayList<>();
 		this.rankMap = new HashMap<>();
 		this.resultMap = extractResultsForOwn();
-		this.goldMap = loadGoldsetMap(goldFile);
+		this.goldMap = this.loadGoldsetMap(goldFile);
 	}
 
 	protected HashMap<Integer, ArrayList<String>> loadGoldsetMap(String goldFile) {
-		HashMap<Integer, ArrayList<String>> goldMap = new HashMap<>();
+		this.goldMap = new HashMap<>();
 		ArrayList<String> lines = ContentLoader.getAllLinesOptList(goldFile);
 		for (int i = 0; i < lines.size();) {
 			String[] parts = lines.get(i).split("\\s+");
@@ -33,20 +34,21 @@ public class BLPerformanceCalc {
 				int bugID = Integer.parseInt(parts[0].trim());
 				int bugCount = Integer.parseInt(parts[1].trim());
 				for (int j = i + 1; j <= i + bugCount; j++) {
-					if (goldMap.containsKey(bugID)) {
-						ArrayList<String> temp = goldMap.get(bugID);
+					if (this.goldMap.containsKey(bugID)) {
+						ArrayList<String> temp = this.goldMap.get(bugID);
 						temp.add(lines.get(j).trim());
-						goldMap.put(bugID, temp);
+						this.goldMap.put(bugID, temp);
 					} else {
 						ArrayList<String> temp = new ArrayList<>();
 						temp.add(lines.get(j).trim());
-						goldMap.put(bugID, temp);
+						this.goldMap.put(bugID, temp);
 					}
 				}
 				i = i + bugCount + 1;
 			}
 		}
-		return goldMap;
+		MiscUtility.showResult(10, this.goldMap);
+		return this.goldMap;
 	}
 
 	protected HashMap<Integer, ArrayList<String>> extractResults() {
@@ -85,7 +87,8 @@ public class BLPerformanceCalc {
 	}
 
 	protected HashMap<Integer, ArrayList<String>> extractResultsForOwn() {
-		ArrayList<String> lines = ContentLoader.getAllLinesList(this.resultFile);
+		ArrayList<String> lines = ContentLoader
+				.getAllLinesList(this.resultFile);
 		// .getAllLinesOptList(this.resultFile);
 		HashMap<Integer, ArrayList<String>> resultMap = new HashMap<>();
 		for (String line : lines) {
@@ -156,6 +159,7 @@ public class BLPerformanceCalc {
 		for (int bugID : this.selectedBugs) {
 			if (resultMap.containsKey(bugID)) {
 				ArrayList<String> resFiles = resultMap.get(bugID);
+				if(this.goldMap.containsKey(bugID)){
 				ArrayList<String> goldFiles = this.goldMap.get(bugID);
 				for (String rFile : resFiles) {
 					String key = bugID + "-" + rFile;
@@ -164,27 +168,25 @@ public class BLPerformanceCalc {
 						if (rank > 0  && rank <= 10) {
 							if (checkEntryFound(goldFiles, rFile)) {
 								found++;
-								System.out.println(rFile+"\t"+key+"\t"+rank);
-								System.out.println(found);
+								// System.out.println(bugID+"\t"+key+"\t"+rank);
+								// System.out.println(bugID);
 								break;
 							}
 						}
 					}
 				}
-
+				}
 			}
 		}
-		System.out.println("Top@10 " + found);
+		System.out.println("Top@10   " + found);
 		return (double) found / this.selectedBugs.size();
 	}
 
 	protected ArrayList<String> getCanonicalURLs(ArrayList<String> goldFiles) {
 		ArrayList<String> canonicalList = new ArrayList<>();
 		for (String fileURL : goldFiles) {
-			String canonical = fileURL;
-			System.out.println(fileURL);
-					//.replace('/', '.');
-			canonicalList.add(canonical);
+			//String canonical = fileURL.replace('/', '.');
+			canonicalList.add(fileURL);
 		}
 		return canonicalList;
 	}
@@ -305,13 +307,13 @@ public class BLPerformanceCalc {
 
 		int TOPK = 10;
 
-		 String resultFile="./Data/Results/eclipseoutput.txt";
-		//String resultFile = "./data/result-June11/FinalResultSidTest1.txt";
+		String resultFile="./Data/Results/eclipseoutput.txt";
+		//String resultFile = "./data/Results/BugLocatorJuly31.txt";
 		String goldFile = "./Data/gitInfoNew.txt";
-		BLPerformanceCalc bcalc = new BLPerformanceCalc(resultFile, TOPK,
+		BLPerformanceCalcMe bcalc = new BLPerformanceCalcMe(resultFile, TOPK,
 				goldFile);
 		double topk = bcalc.getTopKAccOwn();
-      
+
 		System.out.println("Top-K: " + topk);
 		
 		  double preck = bcalc.getMeanAvgPrecisionAtK();

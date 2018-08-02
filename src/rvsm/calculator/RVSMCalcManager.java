@@ -77,7 +77,10 @@ public class RVSMCalcManager {
 		ArrayList<String> finalResult=new ArrayList<>();
 		int maxDocLength = getMaxDocLength();
 		int minDocLength = getMinDocLength(); 
+		int count=0;
 		for (String queryKey : this.queryMap.keySet()) {
+			count++;
+			if(count>100) break;
 			String queryDocument = this.queryMap.get(queryKey);
 			HashMap<String, Double> tempScoreMap = new HashMap<>();
 			for (String srcFileKey : this.sourceFileMap.keySet()) {
@@ -93,19 +96,20 @@ public class RVSMCalcManager {
 			HashMap<String, Double> sortedScore=MiscUtility.sortByValues(tempScoreMap);
 			finalResult.addAll(getSortedTopKResult(10, queryKey, sortedScore));
 			
-			System.out.println("Done:" + queryKey); 
+			System.out.println(count+" Done:" + queryKey.substring(0,queryKey.length()-4)); 
 		}
-		ContentWriter.writeContent("./Data/Results/Masud1Alldata.txt", finalResult);
+		ContentWriter.writeContent("./Data/Results/Masud100QueryProcessedData.txt", finalResult);
 	}
 
 	protected ArrayList<String> getSortedTopKResult(int topK, String queryKey, HashMap<String, Double> sortedScore)
 	{
 		ArrayList<String> finalResult=new ArrayList<>();
-		;
+		int top=0;
 		for(String srcID:sortedScore.keySet())
 		{
-			
-			finalResult.add(queryKey+","+srcID+","+sortedScore.get(srcID));
+			top++;
+			if(top>topK)break;
+			finalResult.add(queryKey.substring(0, queryKey.length()-4)+","+srcID+","+sortedScore.get(srcID));
 		}
 		return finalResult;
 		
@@ -131,12 +135,12 @@ public class RVSMCalcManager {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// For Mac
-		 String sourceFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		 String bugReportFolder="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		 //String sourceFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		 //String bugReportFolder="/Users/user/Documents/Ph.D/2018/Data/BugData/";
 
 		// For Windows
-		// String sourceFolder="E:\\PhD\\Data\\SourceForBL\\";
-		// String bugReportFolder="E:\\PhD\\Data\\BugDataNew\\";
+		 String sourceFolder="E:\\PhD\\Data\\ProcessedSourceForBL\\";
+		 String bugReportFolder="E:\\PhD\\Data\\ProcessedBugData\\";
 
 		long start = System.currentTimeMillis(); 
 
