@@ -28,8 +28,8 @@ public class VSMCalculator {
 
 	// provides TF within a document
 	public HashMap<String, Integer> getTF() {
-		String preprocessed = bpp.performNLP(content);
-		String[] words = preprocessed.split("\\s+");
+		//String preprocessed = bpp.performNLP(content);
+		String[] words = content.split("\\s+");
 		for (String token : words) {
 			this.totalTerms++;
 			if (tfMap.containsKey(token)) {

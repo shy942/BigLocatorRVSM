@@ -41,14 +41,15 @@ public class RVSMCalcManager {
 		return minDocLength;
 	}
 
-	public HashMap<String,HashMap<String,Double>> calculatRVSMforAll() {
-		//ArrayList<String> finalResult = new ArrayList<>();
+	public HashMap<String, HashMap<String, Double>> calculatRVSMforAll() {
+		// ArrayList<String> finalResult = new ArrayList<>();
 		int maxDocLength = getMaxDocLength();
 		int minDocLength = getMinDocLength();
 
 		for (String queryKey : this.queryLogTFMap.keySet()) {
 			HashMap<String, Double> bugReportLogTF = this.queryLogTFMap
 					.get(queryKey);
+
 			HashMap<String, Double> tempScoreMap = new HashMap<>();
 			for (String srcFileKey : this.sourceFileLogTFMap.keySet()) {
 				HashMap<String, Double> sourceLogTF = this.sourceFileLogTFMap
@@ -65,7 +66,7 @@ public class RVSMCalcManager {
 			// now store the VSM score
 			this.rVSMScoreMap.put(queryKey, tempScoreMap);
 
-			System.out.println("RVSM :" + queryKey +": Done!");
+			System.out.println("RVSM :" + queryKey + ": Done!");
 		}
 		System.out.println("RVSM calculation done!");
 		return this.rVSMScoreMap;
@@ -105,12 +106,13 @@ public class RVSMCalcManager {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// For Mac
+
 		String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
 		String bugReportFolder = "/Users/user/Documents/Ph.D/2018/Data/BugData/";
 
 		// For Windows
-		// String sourceFolder="E:\\PhD\\Data\\SourceForBL\\";
-		// String bugReportFolder="E:\\PhD\\Data\\BugDataNew\\";
+		// String sourceFolder="E:\\PhD\\Data\\ProcessedSourceForBL\\";
+		// String bugReportFolder="E:\\PhD\\Data\\ProcessedBugData\\";
 
 		long start = System.currentTimeMillis();
 
@@ -118,9 +120,9 @@ public class RVSMCalcManager {
 		// String sourceFolder = "./Data/SourceForBL";
 		// String bugReportFolder = "./Data/BugDataNew";
 
-		//RVSMCalcManager manager = new RVSMCalcManager(sourceFolder,
-		//		bugReportFolder);
-		//manager.calculatRVSM();
+		// RVSMCalcManager manager = new RVSMCalcManager(sourceFolder,
+		// bugReportFolder);
+		// manager.calculatRVSM();
 
 		long end = System.currentTimeMillis();
 		System.out.println("Time elapsed: " + (end - start) / 1000 + " s");

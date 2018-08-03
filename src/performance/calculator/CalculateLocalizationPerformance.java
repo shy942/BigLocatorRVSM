@@ -35,14 +35,16 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/Masud1.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./data/gitInfoNew.txt","./data/Results/Masud100QueryProcessedData.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
+		MiscUtility.showResult(10, obj.gitResults);
+		System.out.println();
 		obj.ActualResultSets=obj.RetrieveFinalSets(obj.actualSetPath); 	
-	
+	    MiscUtility.showResult(10, obj.ActualResultSets);
 		
 		//Compute TopK percentage
 		HashMap<String, ArrayList<String>>finalRankedResult=obj.ComputePerformancePercent(10,obj);
-		//MiscUtility.showResult(100, finalRankedResult);
+		MiscUtility.showResult(100, finalRankedResult);
 		
 		//Compute MAP
 		obj.ComputeMAP(finalRankedResult,obj);
@@ -157,16 +159,18 @@ public class CalculateLocalizationPerformance {
 	
 		for(String bugID:obj.ActualResultSets.keySet())
 		{
-			int found=0;
+			
 			ArrayList <String> listFromActualResult= obj.ActualResultSets.get(bugID); //Get the experimented results
 	        if(obj.gitResults.containsKey(bugID))// Truth set contains the bug
 	        {
 	        	ArrayList <String> listFromTrueSets=obj.gitResults.get(bugID);
 	        	no_of_bug_matched++;
 	        	//Look for top-K
-	      
+	        	int found=0;
+	        	int resultLength=0;
 	        	for(int i=0;i<listFromActualResult.size();i++){
-	        		
+	        		resultLength++;
+	        		if(resultLength>10)break;
 	        		String resultedFilePath=listFromActualResult.get(i);
 	        			for(int j=0;j<listFromTrueSets.size();j++){
 	        				String trueSetsFilePath=listFromTrueSets.get(j);
@@ -189,10 +193,11 @@ public class CalculateLocalizationPerformance {
 	        				}
 	        			}
 	        		}
+	        	 if(found==1)total_found++;
 	        	}
-	        if(found>0)total_found++;
+	       
 	    }
-	    
+	    System.out.println(finalRankedResult.size());
 	    System.out.println("Total bug: "+no_of_bug_matched);
 	    System.out.println("Total found: "+total_found);
 	    System.out.println("Top "+top_n+" %: "+(Double.valueOf(total_found)/Double.valueOf(no_of_bug_matched))*100);
