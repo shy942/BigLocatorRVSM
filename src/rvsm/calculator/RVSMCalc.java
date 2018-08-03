@@ -1,15 +1,12 @@
 package rvsm.calculator;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import utility.MiscUtility;
 import lucene.TFIDFCalculator;
 import lucene.VSMCalculator;
-import simi.score.calculator.SimiScoreCalc;
-import utility.ContentLoader;
-import utility.ContentWriter;
-import utility.MiscUtility;
 
 public class RVSMCalc {
 	HashMap<String, Double> IDFmap;
@@ -21,26 +18,16 @@ public class RVSMCalc {
 	int minDocLength;
 	int currentDocLength;
 
-	public RVSMCalc(String sourceContent, HashMap<String, Double> IDFMap, int srcDocLength,
-			String queryContent, int maxDocLength, int minDocLength) {
+	public RVSMCalc(HashMap<String, Double> sourceLogTFMap,
+			HashMap<String, Double> IDFMap, int srcDocLength,
+			HashMap<String, Double> bugReportLogTFMap, int maxDocLength,
+			int minDocLength) {
 		this.IDFmap = IDFMap;
-		this.sourceContent = sourceContent;
-		this.SourceTFMap = getSourceLogTFMap();
-		this.queryContent = queryContent;
-		this.queryTFMap = getQueryLogTFMap();
+		this.SourceTFMap = sourceLogTFMap;
+		this.queryTFMap = bugReportLogTFMap;
 		this.maxDocLength = maxDocLength;
 		this.minDocLength = minDocLength;
-		this.currentDocLength=srcDocLength;
-	}
-
-	protected HashMap<String, Double> getSourceLogTFMap() {
-		VSMCalculator objVSMCalc = new VSMCalculator(this.sourceContent);
-		return objVSMCalc.getLogTF();
-	}
-
-	protected HashMap<String, Double> getQueryLogTFMap() {
-		VSMCalculator objVSMCalc = new VSMCalculator(this.queryContent);
-		return objVSMCalc.getLogTF();
+		this.currentDocLength = srcDocLength;
 	}
 
 	protected HashMap<String, Double> getSourceTFIDF() {
@@ -104,16 +91,21 @@ public class RVSMCalc {
 
 		int maxLen = 100;
 		int minLen = 5;
-		int docLength=18;
-		
+		int docLength = 18;
 
 		HashMap<String, Double> IDFMap = new TFIDFCalculator()
 				.calculateIDFOnly();
+		ArrayList<String> srcTokens = MiscUtility.str2List(sourceDoc);
+		ArrayList<String> queryTokens = MiscUtility.str2List(query);
 
-		RVSMCalc vsmCalc = new RVSMCalc(sourceDoc, IDFMap, docLength, query, maxLen,
-				minLen);
+		HashMap<String, Double> sourceLogTF = new VSMCalculator(srcTokens, true)
+				.getLogTF();
+		HashMap<String, Double> queryLogTF = new VSMCalculator(queryTokens,
+				true).getLogTF();
+
+		RVSMCalc vsmCalc = new RVSMCalc(sourceLogTF, IDFMap, docLength,
+				queryLogTF, maxLen, minLen);
 		System.out.println(vsmCalc.calculateRVSMScore());
-
 
 		// For Mac
 		// String

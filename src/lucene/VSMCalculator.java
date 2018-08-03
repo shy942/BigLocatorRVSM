@@ -9,6 +9,8 @@ public class VSMCalculator {
 	String content;
 	BugReportPreprocessor bpp;
 	HashMap<String, Integer> tfMap = new HashMap<String, Integer>();
+	ArrayList<String> tokens;
+	boolean ppDone = false;
 
 	// int year = 2011;
 	int totalTerms = 0;
@@ -17,6 +19,11 @@ public class VSMCalculator {
 		this.content = content;
 		this.bpp = new BugReportPreprocessor(content);
 		this.totalTerms = 0;
+	}
+
+	public VSMCalculator(ArrayList<String> tokens, boolean ppDone) {
+		this.tokens = tokens;
+		this.ppDone = ppDone;
 	}
 
 	// provides TF within a document
@@ -36,6 +43,21 @@ public class VSMCalculator {
 		return tfMap;
 	}
 
+	// provides TF within a document
+	public HashMap<String, Integer> getTF(boolean ppDone) {
+		for (String token : this.tokens) {
+			this.totalTerms++;
+			if (tfMap.containsKey(token)) {
+				int count = tfMap.get(token) + 1;
+				this.tfMap.put(token, count);
+			} else {
+				this.tfMap.put(token, 1);
+			}
+		}
+		// System.out.println("From VSMCalculator: "+totalTerms);
+		return tfMap;
+	}
+
 	public int getTotalTerms() {
 		return this.totalTerms;
 	}
@@ -43,7 +65,11 @@ public class VSMCalculator {
 	// provides logarithmic version of the TF
 	public HashMap<String, Double> getLogTF() {
 		HashMap<String, Double> logTFmap = new HashMap<>();
-		this.tfMap = this.getTF();
+
+		if (ppDone)
+			this.tfMap = this.getTF(ppDone);
+		else
+			this.tfMap = this.getTF();
 		for (String key : tfMap.keySet()) {
 			int tf = tfMap.get(key);
 			Double logTF = Math.log(Double.valueOf(tf)) + 1;

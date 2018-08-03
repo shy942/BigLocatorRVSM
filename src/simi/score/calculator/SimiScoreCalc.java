@@ -3,211 +3,123 @@ package simi.score.calculator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.HashSet;
 import lucene.VSMCalculator;
+import rvsm.calculator.CosineMeasure;
 import sun.security.util.Length;
 import utility.ContentLoader;
+import utility.MathUtil;
 import utility.MiscUtility;
 
 public class SimiScoreCalc {
 
+	public HashMap<String, HashMap<String, Double>> bugContentMap;
+	String currentBugRepotFileKey;
+	HashMap<String, Double> currentBugReportMap;
+	HashMap<Integer, ArrayList<String>> goldsetMap;
 
-	public String sourceCodeFile;
-	public String bugFile;
-	public HashMap<String, String> sourceContentHM;
-	public HashMap<String, String> bugContentHM;
-	
-	HashMap<Integer, ArrayList<String>> goldMap;
- 	
-	public SimiScoreCalc( HashMap<String, String> sourceContentHM, HashMap<String, String> bugContentHM)
-	{
-		this.sourceContentHM=sourceContentHM;
-		this.bugContentHM=bugContentHM;
-		this.goldMap=this.loadGoldsetMap("./Data/gitInfoNew.txt");
+	public SimiScoreCalc(String currentBugReportFileKey,
+			HashMap<String, HashMap<String, Double>> bugContentMap,
+			HashMap<Integer, ArrayList<String>> goldsetMap) {
+		this.currentBugRepotFileKey = currentBugReportFileKey;
+		this.bugContentMap = bugContentMap;
+		// this is the new bug report content
+		this.currentBugReportMap = this.bugContentMap
+				.get(currentBugReportFileKey);
+		this.goldsetMap = goldsetMap;
 	}
-	
-	public SimiScoreCalc(String sourceCodeFile, String bugFile)
-	{
-		this.sourceCodeFile=sourceCodeFile;
-		this.bugFile=bugFile;
-		this.sourceContentHM=new HashMap<>();
-		this.bugContentHM=new HashMap<>();
-		
+
+	protected HashSet<String> getCombinedVocabulary(
+			HashSet<String> currentBugVocabulary,
+			HashSet<String> pastBugVocabulary) {
+		HashSet<String> vocabulary = new HashSet<>();
+		vocabulary.addAll(currentBugVocabulary);
+		vocabulary.addAll(pastBugVocabulary);
+		return vocabulary;
 	}
-	
-	protected HashMap<Integer, ArrayList<String>> loadGoldsetMap(String goldFile) {
-		HashMap<Integer, ArrayList<String>> goldMap = new HashMap<>();
-		ArrayList<String> lines = ContentLoader.getAllLinesOptList(goldFile);
-		for (int i = 0; i < lines.size();) {
-			String[] parts = lines.get(i).split("\\s+");
-			if (parts.length == 2) {
-				int bugID = Integer.parseInt(parts[0].trim());
-				int bugCount = Integer.parseInt(parts[1].trim());
-				for (int j = i + 1; j <= i + bugCount; j++) {
-					if (goldMap.containsKey(bugID)) {
-						ArrayList<String> temp = goldMap.get(bugID);
-						temp.add(lines.get(j).trim());
-						goldMap.put(bugID, temp);
+
+	protected double[] getVSMRepresentation(ArrayList<String> vocabulary,
+			HashMap<String, Double> scoreMap) {
+		double[] vector = new double[vocabulary.size()];
+		for (int index = 0; index < vocabulary.size(); index++) {
+			String term = vocabulary.get(index);
+			if (scoreMap.containsKey(term)) {
+				vector[index] = scoreMap.get(term);
+			} else {
+				vector[index] = 0;
+			}
+		}
+		return vector;
+	}
+
+	protected HashMap<String, Double> getSimilarBugReportKeyNScore() {
+		HashMap<String, Double> simBugReportMap = new HashMap<>();
+		int currentBugID = Integer
+				.parseInt(currentBugRepotFileKey.split("\\.")[0]);
+		HashMap<String, Double> currentBugContentMap = this.bugContentMap
+				.get(currentBugRepotFileKey);
+		HashSet<String> currentVocabulary = new HashSet<>(
+				currentBugContentMap.keySet());
+		for (String bugReportKey : this.bugContentMap.keySet()) {
+			int bugID = Integer.parseInt(bugReportKey.split("\\.")[0]);
+			if (currentBugID > bugID) {
+				HashMap<String, Double> pastBugContentMap = this.bugContentMap
+						.get(bugReportKey);
+				HashSet<String> pastVocabulary = new HashSet<>(
+						pastBugContentMap.keySet());
+				HashSet<String> combined = getCombinedVocabulary(
+						currentVocabulary, pastVocabulary);
+				double[] currentVector = getVSMRepresentation(
+						new ArrayList<String>(combined), currentBugContentMap);
+				double[] pastVector = getVSMRepresentation(
+						new ArrayList<String>(combined), pastBugContentMap);
+				double cosMeasure = CosineMeasure.getCosineSimilarity(
+						currentVector, pastVector);
+				if (cosMeasure > 0) {
+					simBugReportMap.put(bugReportKey, cosMeasure);
+				}
+			}
+		}
+		return simBugReportMap;
+	}
+
+	public HashMap<String, Double> calculateSimiScoreMap() {
+		HashMap<String, Double> simBugReportMap = getSimilarBugReportKeyNScore();
+		HashMap<String, ArrayList<Double>> simiScoreAll = new HashMap<>();
+		HashMap<String, Double> simiScoreMap = new HashMap<>();
+		for (String bugReportKey : simBugReportMap.keySet()) {
+			int bugID = Integer.parseInt(bugReportKey.split("\\.")[0].trim());
+			if (this.goldsetMap.containsKey(bugID)) {
+				ArrayList<String> changeset = this.goldsetMap.get(bugID);
+				double cosScore = simBugReportMap.get(bugReportKey);
+				for (String srcFile : changeset) {
+					if (simiScoreAll.containsKey(srcFile)) {
+						ArrayList<Double> temp = simiScoreAll.get(srcFile);
+						temp.add(cosScore);
+						simiScoreAll.put(srcFile, temp);
 					} else {
-						ArrayList<String> temp = new ArrayList<>();
-						temp.add(lines.get(j).trim());
-						goldMap.put(bugID, temp);
+						ArrayList<Double> temp = new ArrayList<>();
+						temp.add(cosScore);
+						simiScoreAll.put(srcFile, temp);
 					}
 				}
-				i = i + bugCount + 1;
 			}
 		}
-		return goldMap;
-	}
-	
-	
-	public HashMap<String, String> LoadFiles(String filePath)
-	{
-		HashMap<String, String> hm=new HashMap<>();
-		File[] sourceCodeFiles = new File(filePath).listFiles();
-		System.out.println("Total number of source code files: "+sourceCodeFiles.length);
-		int noOfTotalDocument=sourceCodeFiles.length;
-		
-		for (File sourceCodeFile : sourceCodeFiles) {
-			String sourceCodeContent = ContentLoader.readContentSimple(sourceCodeFile
-				.getAbsolutePath());
-			hm.put(sourceCodeFile.getName(), sourceCodeContent);
-			
+		// now calculate the similarity score
+		for (String srcFile : simiScoreAll.keySet()) {
+			double meanSimi = MathUtil.getMean(simiScoreAll.get(srcFile));
+			simiScoreMap.put(srcFile, meanSimi);
 		}
-		//MiscUtility.showResult(10, hm);
-		return hm;
+		return simiScoreMap;
 	}
-	 
-	public HashMap<String, Double> cosineSimiCalculator (String queryContent) {
-		HashMap<String, Double> cosineScoreHM=new HashMap<>();;
-			for (String bugID : this.bugContentHM.keySet()) {
-			
-				String str1=queryContent;
-				String str2=this.bugContentHM.get(bugID);
-				double cosineSimilarity = new CosineSimilarity().similarity(
-						str1,str2);
-						//queryContent, bugContent);
-				//System.out.println(cosineSimilarity);
-				if (cosineSimilarity > 0.0) {
-					String bugIDfound = bugID;
-					
-					if(cosineSimilarity>1.0)System.out.println(bugIDfound+" "+cosineSimilarity);
-					cosineScoreHM.put(bugIDfound, cosineSimilarity);
-				}
-			}
-			return cosineScoreHM;
-	}
-	public Double getMaxLength(ArrayList<String> LengthList)
-	{
-		Double MaxLen=(Double) 0.0;
-		for(String len:LengthList)
-		{
-			Double lengthInt=Double.valueOf(len);
-			if(MaxLen<lengthInt)MaxLen=lengthInt;
-		}
-		return MaxLen;
-	}
-	
-	public Double getMinLength(ArrayList<String> LengthList)
-	{
-		Double MinLen=(Double) 100000.0;
-		for(String len:LengthList)
-		{
-			Double lengthInt=Double.valueOf(len);
-			if(MinLen>lengthInt)MinLen=lengthInt;
-		}
-		return MinLen;
-	}
-	
-	public HashMap<String, Double> SimilarityCalc(String queryContent)
-	{
-		//this.sourceContentHM=this.LoadFiles(this.sourceCodeFile);
-		//this.bugContentHM=this.LoadFiles(this.bugFile);
-		HashMap<String , Integer> sourceLengthInfo=new HashMap<>();
-		HashMap<String, Double> cosineScoreHM=this.cosineSimiCalculator(queryContent);
-		HashMap<String, Double> similarityScoreHM=new HashMap<>();
 
-		for(String bugID:cosineScoreHM.keySet())
-		{ 
-			//System.out.println(bugID);
-			if(bugID.equalsIgnoreCase(".DS_Store")==false){
-			int ID=Integer.valueOf(bugID.substring(0, bugID.length()-4));
-			if(this.goldMap.containsKey(ID)){
-				//System.out.println(this.goldMap.get(ID));
-				int n_i=this.goldMap.get(ID).size();
-				for(String file:this.goldMap.get(ID)){
-					if(similarityScoreHM.containsKey(file))
-					{
-						double simiScoreOld=similarityScoreHM.get(file);
-						if(cosineScoreHM.get(bugID)>1.0)System.out.println(" this.similarityScoreHM.get(file) "+similarityScoreHM.get(file));
-						double simiScoreSi=simiScoreOld+cosineScoreHM.get(bugID)/Double.valueOf(n_i);
-						similarityScoreHM.put(file, simiScoreSi);
-						int length=sourceLengthInfo.get(file);
-						length+=1;
-						sourceLengthInfo.put(file,length);
-					}
-					else
-					{
-						//if(this.cosineScoreHM.get(bugID)>1.0)System.out.println(" this.similarityScoreHM.get(file) "+this.similarityScoreHM.get(file));
-						double simiScoreSi=cosineScoreHM.get(bugID)/Double.valueOf(n_i);
-						similarityScoreHM.put(file, simiScoreSi);
-						sourceLengthInfo.put(file, 1);
-					}
-				}
-			}
-		}
-	}
-		//MiscUtility.showResult(20, MiscUtility.sortByValues(similarityScoreHM));
-		ArrayList<String> lengthList=new ArrayList<>();
-		for(String file: similarityScoreHM.keySet())
-		{
-			
-			Double score=similarityScoreHM.get(file);
-			lengthList.add(String.valueOf(score));
-		}
-		
-		
-		//Normalize Similarity score
-		double maxLength=Double.valueOf(this.getMaxLength(lengthList));
-		double minLength=Double.valueOf(this.getMinLength(lengthList));
-		
-		for(String file:similarityScoreHM.keySet())
-		{
-			double score=similarityScoreHM.get(file);
-		
-			
-			Double N=(score-minLength)/(maxLength-minLength);
-			
-			score=N;
-			if(score>0.0)
-			{
-				//System.out.println(maxLength+" "+minLength);
-				//System.out.println(" score  "+score);
-				//System.out.println("N  "+N);
-				similarityScoreHM.put(file, N);
-			}
-		}
-	
-		//MiscUtility.showResult(10, similarityScoreHM);
-		return MiscUtility.sortByValues(similarityScoreHM);
-		
-}
-	
-	
-	
-	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		SimiScoreCalc obj=new SimiScoreCalc("/Users/user/Documents/Ph.D/2018/Data/SourceForBL/", "/Users/user/Documents/Ph.D/2018/Data/BugData/");
-		obj.sourceContentHM=obj.LoadFiles(obj.sourceCodeFile);
-		obj.bugContentHM=obj.LoadFiles(obj.bugFile);
-		obj.goldMap=obj.loadGoldsetMap("./Data/gitInfoNew.txt");
-		obj.cosineSimiCalculator("");
-		obj.SimilarityCalc("");
-	}
 
-	
-	
-	
-	
+		/********
+		 * Always design a function that has an input and an output, do not use
+		 * void, this is confusing
+		 *********/
+
+	}
 }

@@ -3,61 +3,34 @@ package rvsm.calculator;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import lucene.TFIDFCalculator;
 import utility.ContentLoader;
 import utility.ContentWriter;
+import utility.ItemSorter;
 import utility.MiscUtility;
 
 public class RVSMCalcManager {
 	HashMap<String, Double> IDFmap;
-	HashMap<String, String> sourceFileMap;
+	HashMap<String, HashMap<String, Double>> sourceFileLogTFMap;
 	HashMap<String, HashMap<String, Double>> rVSMScoreMap;
-	HashMap<String, String> queryMap;
+	HashMap<String, HashMap<String, Double>> queryLogTFMap;
 	HashMap<String, Integer> docLengthMap;
 	int maxDocLength = 0;
 	int minDocLength = 100000;
 
-	public RVSMCalcManager(String sourceFolder, String queryFolder) {
-		this.docLengthMap = new HashMap<>();
-		this.sourceFileMap = getSourceFileContentMap(sourceFolder);
-		this.queryMap = getDocFileContentMap(queryFolder);
-		this.IDFmap = getSourceDocumentIDF();
+	public RVSMCalcManager(
+			HashMap<String, HashMap<String, Double>> sourceFileLogTFMap,
+			HashMap<String, HashMap<String, Double>> queryLogTFMap,
+			HashMap<String, Double> IDFMap, int maxDocLength, int minDocLength,
+			HashMap<String, Integer> docLengthMap) {
+		this.docLengthMap = docLengthMap;
+		this.sourceFileLogTFMap = sourceFileLogTFMap;
+		this.queryLogTFMap = queryLogTFMap;
+		this.IDFmap = IDFMap;
 		this.rVSMScoreMap = new HashMap<>();
-	}
-
-	protected HashMap<String, String> getDocFileContentMap(String docFolder) {
-		File[] files = new File(docFolder).listFiles();
-		HashMap<String, String> docMap = new HashMap<>();
-		for (File file : files) {
-			ArrayList<String> docLines = ContentLoader.getAllLinesOptList(file
-					.getAbsolutePath());
-			String docContent = MiscUtility.list2Str(docLines);
-			docMap.put(file.getName(), docContent);
-		}
-		return docMap;
-	}
-
-	protected HashMap<String, String> getSourceFileContentMap(
-			String sourceFolder) {
-		File[] files = new File(sourceFolder).listFiles();
-		HashMap<String, String> docMap = new HashMap<>();
-		for (File file : files) {
-			ArrayList<String> srcTokens = ContentLoader.getDocTokensAll(file
-					.getAbsolutePath());
-			// storing source file length
-			this.docLengthMap.put(file.getName(), srcTokens.size());
-
-			// getting maximum and minimum document length
-			if (srcTokens.size() > maxDocLength) {
-				maxDocLength = srcTokens.size();
-			}
-			if (srcTokens.size() < minDocLength) {
-				minDocLength = srcTokens.size();
-			}
-			String docContent = MiscUtility.list2Str(srcTokens);
-			docMap.put(file.getName(), docContent);
-		}
-		return docMap;
+		this.maxDocLength = maxDocLength;
+		this.minDocLength = minDocLength;
 	}
 
 	protected int getMaxDocLength() {
@@ -68,48 +41,49 @@ public class RVSMCalcManager {
 		return minDocLength;
 	}
 
-	public HashMap<String, Double> getSourceDocumentIDF() {
-		TFIDFCalculator objTFIDFCalc = new TFIDFCalculator();
-		return objTFIDFCalc.calculateIDFOnly();
-	}
-
-	protected void calculatRVSM() {
-		ArrayList<String> finalResult=new ArrayList<>();
+	public HashMap<String,HashMap<String,Double>> calculatRVSMforAll() {
+		//ArrayList<String> finalResult = new ArrayList<>();
 		int maxDocLength = getMaxDocLength();
-		int minDocLength = getMinDocLength(); 
-		for (String queryKey : this.queryMap.keySet()) {
-			String queryDocument = this.queryMap.get(queryKey);
+		int minDocLength = getMinDocLength();
+
+		for (String queryKey : this.queryLogTFMap.keySet()) {
+			HashMap<String, Double> bugReportLogTF = this.queryLogTFMap
+					.get(queryKey);
 			HashMap<String, Double> tempScoreMap = new HashMap<>();
-			for (String srcFileKey : this.sourceFileMap.keySet()) {
-				String sourceDocument = this.sourceFileMap.get(srcFileKey);
-				RVSMCalc rcalc = new RVSMCalc(sourceDocument, this.IDFmap, this.docLengthMap.get(srcFileKey),
-						queryDocument, maxDocLength, minDocLength);
+			for (String srcFileKey : this.sourceFileLogTFMap.keySet()) {
+				HashMap<String, Double> sourceLogTF = this.sourceFileLogTFMap
+						.get(srcFileKey);
+				int srcDocLength = this.docLengthMap.get(srcFileKey);
+
+				RVSMCalc rcalc = new RVSMCalc(sourceLogTF, IDFmap,
+						srcDocLength, bugReportLogTF, maxDocLength,
+						minDocLength);
 				double score = rcalc.calculateRVSMScore();
 				tempScoreMap.put(srcFileKey, score);
 			}
-			tempScoreMap = normalizeMe(tempScoreMap); 
+			tempScoreMap = normalizeMe(tempScoreMap);
 			// now store the VSM score
 			this.rVSMScoreMap.put(queryKey, tempScoreMap);
-			HashMap<String, Double> sortedScore=MiscUtility.sortByValues(tempScoreMap);
-			finalResult.addAll(getSortedTopKResult(10, queryKey, sortedScore));
-			
-			System.out.println("Done:" + queryKey); 
+
+			System.out.println("RVSM :" + queryKey +": Done!");
 		}
-		ContentWriter.writeContent("./Data/Results/Masud1Alldata.txt", finalResult);
+		System.out.println("RVSM calculation done!");
+		return this.rVSMScoreMap;
 	}
 
-	protected ArrayList<String> getSortedTopKResult(int topK, String queryKey, HashMap<String, Double> sortedScore)
-	{
-		ArrayList<String> finalResult=new ArrayList<>();
-		;
-		for(String srcID:sortedScore.keySet())
-		{
-			
-			finalResult.add(queryKey+","+srcID+","+sortedScore.get(srcID));
+	protected ArrayList<String> getSortedTopKResult(int topK, String queryKey,
+			HashMap<String, Double> sortedScore) {
+		ArrayList<String> finalResult = new ArrayList<>();
+		for (String srcID : sortedScore.keySet()) {
+			finalResult.add(queryKey + "," + srcID + ","
+					+ sortedScore.get(srcID));
+			if (finalResult.size() == topK)
+				break;
 		}
 		return finalResult;
-		
+
 	}
+
 	protected HashMap<String, Double> normalizeMe(
 			HashMap<String, Double> tempMap) {
 		double max = 0;
@@ -131,22 +105,22 @@ public class RVSMCalcManager {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// For Mac
-		 String sourceFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		 String bugReportFolder="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		String bugReportFolder = "/Users/user/Documents/Ph.D/2018/Data/BugData/";
 
 		// For Windows
 		// String sourceFolder="E:\\PhD\\Data\\SourceForBL\\";
 		// String bugReportFolder="E:\\PhD\\Data\\BugDataNew\\";
 
-		long start = System.currentTimeMillis(); 
+		long start = System.currentTimeMillis();
 
 		// For testing
-		//String sourceFolder = "./Data/SourceForBL";
-		//String bugReportFolder = "./Data/BugDataNew";
+		// String sourceFolder = "./Data/SourceForBL";
+		// String bugReportFolder = "./Data/BugDataNew";
 
-		RVSMCalcManager manager = new RVSMCalcManager(sourceFolder,
-				bugReportFolder);
-		manager.calculatRVSM();
+		//RVSMCalcManager manager = new RVSMCalcManager(sourceFolder,
+		//		bugReportFolder);
+		//manager.calculatRVSM();
 
 		long end = System.currentTimeMillis();
 		System.out.println("Time elapsed: " + (end - start) / 1000 + " s");

@@ -47,10 +47,11 @@ public class BLPerformanceCalc {
 				i = i + bugCount + 1;
 			}
 		}
-		MiscUtility.showResult(10, this.goldMap);
+		// MiscUtility.showResult(10, this.goldMap);
 		return this.goldMap;
 	}
 
+	@Deprecated
 	protected HashMap<Integer, ArrayList<String>> extractResults() {
 		ArrayList<String> lines = ContentLoader
 				.getAllLinesList(this.resultFile);
@@ -60,6 +61,7 @@ public class BLPerformanceCalc {
 			String[] parts = line.trim().split(",");
 			int bugID = Integer.parseInt(parts[0]);
 			int rank = Integer.parseInt(parts[2].trim());
+
 			// if (rank >= 0 && rank < TOPK) {
 			// if (selectedBugs.contains(bugID)) {
 			String fileURL = parts[1].trim();
@@ -130,6 +132,7 @@ public class BLPerformanceCalc {
 		return resultMap;
 	}
 
+	@Deprecated
 	protected double getTopKAcc() {
 		int found = 0;
 		for (int bugID : this.selectedBugs) {
@@ -159,33 +162,28 @@ public class BLPerformanceCalc {
 		for (int bugID : this.selectedBugs) {
 			if (resultMap.containsKey(bugID)) {
 				ArrayList<String> resFiles = resultMap.get(bugID);
-				if(this.goldMap.containsKey(bugID)){
-				ArrayList<String> goldFiles = this.goldMap.get(bugID);
-				for (String rFile : resFiles) {
-					String key = bugID + "-" + rFile;
-					if (rankMap.containsKey(key)) {
-						int rank = rankMap.get(key);
-						if (rank > 0  && rank <= 10) {
-							if (checkEntryFound(goldFiles, rFile)) {
-								found++;
-								// System.out.println(bugID+"\t"+key+"\t"+rank);
-								// System.out.println(bugID);
-								break;
-							}
+				if (this.goldMap.containsKey(bugID)) {
+					ArrayList<String> goldFiles = this.goldMap.get(bugID);
+					for (String rFile : resFiles) {
+						if (checkEntryFound(goldFiles, rFile)) {
+							found++;
+							System.out.println(bugID);
+							// System.out.println(bugID);
+							break;
 						}
 					}
 				}
-				}
 			}
 		}
-		System.out.println("Top@10   " + found);
+		
+		System.out.println("Top@10: " + found);
 		return (double) found / this.selectedBugs.size();
 	}
 
 	protected ArrayList<String> getCanonicalURLs(ArrayList<String> goldFiles) {
 		ArrayList<String> canonicalList = new ArrayList<>();
 		for (String fileURL : goldFiles) {
-			//String canonical = fileURL.replace('/', '.');
+			// String canonical = fileURL.replace('/', '.');
 			canonicalList.add(fileURL);
 		}
 		return canonicalList;
@@ -307,19 +305,22 @@ public class BLPerformanceCalc {
 
 		int TOPK = 10;
 
-		String resultFile="./data/Results/eclipseoutput.txt";
-		//String resultFile = "./data/Results/BugLocatorJuly31.txt";
+		String resultFile = "./data/Results/Bug-Locator-August02.txt";
+		// String resultFile = "./data/Results/BugLocatorJuly31.txt";
 		String goldFile = "./data/gitInfoNew.txt";
 		BLPerformanceCalc bcalc = new BLPerformanceCalc(resultFile, TOPK,
 				goldFile);
-		double topk = bcalc.getTopKAccOwn();
-
-		System.out.println("Top-K: " + topk);
 		
-		  double preck = bcalc.getMeanAvgPrecisionAtK();
-		  System.out.println("MAP@K: " + preck); double recallk =
-		  bcalc.getMeanRecall(); System.out.println("MR@K: " + recallk); double
-		  rrK = bcalc.getMRRK(TOPK); System.out.println("MRR@K: " + rrK);
-		 
+		double topkAcc = bcalc.getTopKAccOwn();
+
+		System.out.println("Top-K: " + topkAcc);
+
+		double preck = bcalc.getMeanAvgPrecisionAtK();
+		System.out.println("MAP@K: " + preck);
+		double recallk = bcalc.getMeanRecall();
+		System.out.println("MR@K: " + recallk);
+		double rrK = bcalc.getMRRK(TOPK);
+		System.out.println("MRR@K: " + rrK);
+
 	}
 }
