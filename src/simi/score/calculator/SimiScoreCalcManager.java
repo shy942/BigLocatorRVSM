@@ -17,7 +17,13 @@ public class SimiScoreCalcManager {
 
 	public HashMap<String, HashMap<String, Double>> collectSimiScoreMap() {
 		HashMap<String, HashMap<String, Double>> masterSimiScoreMap = new HashMap<>();
+		int count=0;
 		for (String bugReportKey : bugContentMap.keySet()) {
+			String bugWOtxt=bugReportKey.substring(0,bugReportKey.length()-4);
+			if(goldsetMap.containsKey(Integer.valueOf(bugWOtxt)))
+			{
+				count++;
+				if(count>100)break;
 			SimiScoreCalc simiCalc = new SimiScoreCalc(bugReportKey,
 					bugContentMap, goldsetMap);
 			HashMap<String, Double> simiScoreMap = simiCalc
@@ -25,6 +31,7 @@ public class SimiScoreCalcManager {
 			simiScoreMap = normalizeMe(simiScoreMap);
 			masterSimiScoreMap.put(bugReportKey, simiScoreMap);
 			System.out.println("SimiScore: " + bugReportKey + " : Done!");
+			}
 		}
 		System.out.println("Simiscore calculated successfully!");
 		return masterSimiScoreMap;

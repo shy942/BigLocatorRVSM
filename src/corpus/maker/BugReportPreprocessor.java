@@ -113,10 +113,10 @@ public class BugReportPreprocessor {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String inputFolder="E:\\PhD\\Data\\BugDataNew\\";
-		String outputFolder="E:\\PhD\\Data\\ProcessedBugData\\";
+		String inputFolder="/Users/user/Documents/Ph.D/2018/Data/BugData/";
+		String outputFolder="/Users/user/Documents/Ph.D/2018/Data/ProcessedBugData/";
 		BugReportPreprocessor obj=new BugReportPreprocessor(inputFolder);
-		obj.PerformStemming(outputFolder);
+		obj.PerformStemming(outputFolder); 
 	}
 
 }

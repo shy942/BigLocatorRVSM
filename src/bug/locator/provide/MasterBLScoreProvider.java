@@ -55,7 +55,7 @@ public class MasterBLScoreProvider {
 				this.masterSourceLogTFMap, this.masterBugReportLogTFMap,
 				this.idfMap, this.maxDocLength, this.minDocLength,
 				this.docLengthMap);
-		return vsmManager.calculatRVSMforAll();
+		return vsmManager.calculatRVSMforAll(this.goldsetMap);
 	}
 
 	protected HashMap<String, HashMap<String, Double>> collectSimiScoreMap() {
@@ -105,7 +105,7 @@ public class MasterBLScoreProvider {
 			HashMap<String, Double> simi = simiMapAll.get(bugReportKey);
 			ArrayList<String> rankedResults = getRankedResults(bugReportKey,
 					rVSM, simi);
-			masterResultList.addAll(rankedResults);
+			masterResultList.addAll(rankedResults); 
 		}
 		String bugLocatorResultFile = "./Data/Results/Bug-Locator-August02.txt";
 		ContentWriter.writeContent(bugLocatorResultFile, masterResultList);
@@ -113,9 +113,9 @@ public class MasterBLScoreProvider {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		long start = System.currentTimeMillis();
-		String bugReportFolder = "./Data/ProcessedBugData";
-		String sourceFolder = "./Data/ProcessedSourceForBL";
+		long start = System.currentTimeMillis(); 
+		String bugReportFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedBugData/";
+		String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedSourceForBL/";
 		String goldsetFile = "./Data/gitInfoNew.txt";
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
 				.produceBugLocatorResults();

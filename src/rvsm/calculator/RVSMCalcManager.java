@@ -41,12 +41,16 @@ public class RVSMCalcManager {
 		return minDocLength;
 	}
 
-	public HashMap<String, HashMap<String, Double>> calculatRVSMforAll() {
+	public HashMap<String, HashMap<String, Double>> calculatRVSMforAll(HashMap<Integer, ArrayList<String>> goldsetMap) {
 		// ArrayList<String> finalResult = new ArrayList<>();
 		int maxDocLength = getMaxDocLength();
 		int minDocLength = getMinDocLength();
-
+        int count =0;
 		for (String queryKey : this.queryLogTFMap.keySet()) {
+			String queryWOtxt=queryKey.substring(0,queryKey.length()-4);
+			if(goldsetMap.containsKey(Integer.valueOf(queryWOtxt))){
+				count++;
+				if(count>100) break;
 			HashMap<String, Double> bugReportLogTF = this.queryLogTFMap
 					.get(queryKey);
 
@@ -67,6 +71,7 @@ public class RVSMCalcManager {
 			this.rVSMScoreMap.put(queryKey, tempScoreMap);
 
 			System.out.println("RVSM :" + queryKey + ": Done!");
+			}
 		}
 		System.out.println("RVSM calculation done!");
 		return this.rVSMScoreMap;
