@@ -47,10 +47,11 @@ public class RVSMCalcManager {
 		int minDocLength = getMinDocLength();
         int count =0;
 		for (String queryKey : this.queryLogTFMap.keySet()) {
+			if(!queryKey.equalsIgnoreCase(".DS_Store")){
 			String queryWOtxt=queryKey.substring(0,queryKey.length()-4);
 			if(goldsetMap.containsKey(Integer.valueOf(queryWOtxt))){
 				count++;
-				if(count>100) break;
+				if(count>2000) break;
 			HashMap<String, Double> bugReportLogTF = this.queryLogTFMap
 					.get(queryKey);
 
@@ -66,11 +67,13 @@ public class RVSMCalcManager {
 				double score = rcalc.calculateRVSMScore();
 				tempScoreMap.put(srcFileKey, score);
 			}
+			
 			tempScoreMap = normalizeMe(tempScoreMap);
 			// now store the VSM score
 			this.rVSMScoreMap.put(queryKey, tempScoreMap);
 
-			System.out.println("RVSM :" + queryKey + ": Done!");
+			System.out.println(count+" RVSM :" + queryKey + ": Done!");
+			}
 			}
 		}
 		System.out.println("RVSM calculation done!");

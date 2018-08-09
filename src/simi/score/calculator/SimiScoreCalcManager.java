@@ -23,14 +23,14 @@ public class SimiScoreCalcManager {
 			if(goldsetMap.containsKey(Integer.valueOf(bugWOtxt)))
 			{
 				count++;
-				if(count>100)break;
+				if(count>2000)break;
 			SimiScoreCalc simiCalc = new SimiScoreCalc(bugReportKey,
 					bugContentMap, goldsetMap);
 			HashMap<String, Double> simiScoreMap = simiCalc
 					.calculateSimiScoreMap();
 			simiScoreMap = normalizeMe(simiScoreMap);
 			masterSimiScoreMap.put(bugReportKey, simiScoreMap);
-			System.out.println("SimiScore: " + bugReportKey + " : Done!");
+			System.out.println(count+" "+"SimiScore: " + bugReportKey + " : Done!");
 			}
 		}
 		System.out.println("Simiscore calculated successfully!");

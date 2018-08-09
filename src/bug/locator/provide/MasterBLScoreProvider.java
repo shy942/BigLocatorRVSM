@@ -24,7 +24,7 @@ public class MasterBLScoreProvider {
 	HashMap<String, HashMap<String, Double>> masterBugReportLogTFMap;
 	HashMap<Integer, ArrayList<String>> goldsetMap;
 	HashMap<String, Double> idfMap;
-	final double ALPHA = 0.8;
+	final double ALPHA = 0.2;
 	final int TOPK_SIZE = 10;
 
 	public MasterBLScoreProvider(String srcFolder, String bugReportFolder,
@@ -75,10 +75,10 @@ public class MasterBLScoreProvider {
 		for (String srcFileKey : candidates) {
 			double myScore = 0;
 			if (vsmScoreMap.containsKey(srcFileKey)) {
-				myScore = vsmScoreMap.get(srcFileKey) * ALPHA;
+				myScore = vsmScoreMap.get(srcFileKey) * (1 - ALPHA);
 			}
 			if (simiScoreMap.containsKey(srcFileKey)) {
-				myScore += simiScoreMap.get(srcFileKey) * (1 - ALPHA);
+				myScore += simiScoreMap.get(srcFileKey) * ALPHA;
 			}
 			srcFileScoreMap.put(srcFileKey, myScore);
 		}
@@ -107,7 +107,7 @@ public class MasterBLScoreProvider {
 					rVSM, simi);
 			masterResultList.addAll(rankedResults); 
 		}
-		String bugLocatorResultFile = "./Data/Results/Bug-Locator-August02.txt";
+		String bugLocatorResultFile = "./Data/Results/Bug-Locator-August09-2000.txt";
 		ContentWriter.writeContent(bugLocatorResultFile, masterResultList);
 	}
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import utility.ContentLoader;
 import utility.MiscUtility;
 
-public class BLPerformanceCalcMe {
+public class BLPerformanceCalcRankedResult {
 
 	String repoName;
 	String resultFile;
@@ -15,13 +15,13 @@ public class BLPerformanceCalcMe {
 	HashMap<Integer, ArrayList<String>> resultMap;
 	boolean IROnly;
 	HashMap<Integer, ArrayList<String>> goldMap;
-
-	public BLPerformanceCalcMe(String outputFileName, int TOPK, String goldFile) {
+   
+	public BLPerformanceCalcRankedResult(String outputFileName, int TOPK, String goldFile) {
 		this.resultFile = outputFileName;
 		this.TOPK = TOPK;
 		this.selectedBugs = new ArrayList<>();
 		this.rankMap = new HashMap<>();
-		this.resultMap = extractResultsForOwn();
+		this.resultMap = extractResults();
 		this.goldMap = this.loadGoldsetMap(goldFile);
 	}
 
@@ -60,13 +60,15 @@ public class BLPerformanceCalcMe {
 			String[] parts = line.trim().split(",");
 			int bugID = Integer.parseInt(parts[0]);
 			int rank = Integer.parseInt(parts[2].trim());
-			// if (rank >= 0 && rank < TOPK) {
+			
+			if (rank >= 0 && rank < TOPK) {
+				if (!this.selectedBugs.contains(bugID)) {
+					this.selectedBugs.add(bugID);
+				}
 			// if (selectedBugs.contains(bugID)) {
 			String fileURL = parts[1].trim();
 			String key = bugID + "-" + fileURL;
-			if (!this.selectedBugs.contains(bugID)) {
-				this.selectedBugs.add(bugID);
-			}
+		
 			if (resultMap.containsKey(bugID)) {
 				ArrayList<String> files = resultMap.get(bugID);
 				files.add(fileURL);
@@ -78,9 +80,9 @@ public class BLPerformanceCalcMe {
 			}
 			// storing the ranks
 			this.rankMap.put(key, rank);
-			// }
+			// } 
 		}
-		// }
+		}
 		// System.out.println(repoName + ": Results:" + resultMap.size() + "\t"
 		// + selectedBugs.size());
 		return resultMap;
@@ -99,7 +101,7 @@ public class BLPerformanceCalcMe {
 			String fileURL = parts[1].trim();
 			String key = bugID + "-" + fileURL;
 			if (!this.selectedBugs.contains(bugID)) {
-				this.selectedBugs.add(bugID);
+				if(this.goldMap.containsKey(bugID))this.selectedBugs.add(bugID); 
 			}
 			if (resultMap.containsKey(bugID)) {
 				ArrayList<String> files = resultMap.get(bugID);
@@ -156,10 +158,12 @@ public class BLPerformanceCalcMe {
 
 	protected double getTopKAccOwn() {
 		int found = 0;
+		int x=0;
 		for (int bugID : this.selectedBugs) {
 			if (resultMap.containsKey(bugID)) {
 				ArrayList<String> resFiles = resultMap.get(bugID);
 				if(this.goldMap.containsKey(bugID)){
+					System.out.println("Its in goldset "+(x++)+" "+bugID);
 				ArrayList<String> goldFiles = this.goldMap.get(bugID);
 				for (String rFile : resFiles) {
 					String key = bugID + "-" + rFile;
@@ -305,16 +309,17 @@ public class BLPerformanceCalcMe {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		int TOPK = 10;
+		int TOPK = 5;
 
-		//String resultFile="./Data/Results/eclipseoutput.txt";
-		String resultFile = "./data/Results/Bug-Locator-August02.txt";
-		String goldFile = "./Data/gitInfoNew.txt";
-		BLPerformanceCalcMe bcalc = new BLPerformanceCalcMe(resultFile, TOPK,
+		String resultFile="./Data/Results/eclipseoutput.txt";
+		//String resultFile = "./data/Results/Bug-Locator-August02.txt";
+		String goldFile = "./Data/gitInfoNew.txt"; 
+		BLPerformanceCalcRankedResult bcalc = new BLPerformanceCalcRankedResult(resultFile, TOPK,
 				goldFile);
 		double topk = bcalc.getTopKAccOwn();
-
-		System.out.println("Top-K: " + topk);
+		System.out.println("Total bug resulted: "+bcalc.selectedBugs.size());
+        //System.out.println("Total bug ranked in TopK:" +bcalc.rankMap.size());
+		System.out.println("Total % of bug found in Top-"+TOPK+" = "+topk);
 		
 		  double preck = bcalc.getMeanAvgPrecisionAtK();
 		  System.out.println("MAP@K: " + preck); double recallk =

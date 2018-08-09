@@ -91,7 +91,7 @@ public class SimiScoreCalc {
 		HashMap<String, Double> simiScoreMap = new HashMap<>();
 		for (String bugReportKey : simBugReportMap.keySet()) {
 			int bugID = Integer.parseInt(bugReportKey.split("\\.")[0].trim());
-			System.out.println("bugReportKey "+bugReportKey);
+			//System.out.println("bugReportKey "+bugReportKey);
 			if (this.goldsetMap.containsKey(bugID)) {
 				ArrayList<String> changeset = this.goldsetMap.get(bugID);
 				double cosScore = simBugReportMap.get(bugReportKey);
