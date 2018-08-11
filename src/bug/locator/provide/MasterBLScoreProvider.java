@@ -97,9 +97,9 @@ public class MasterBLScoreProvider {
 		return rankedResults;
 	}
 
-	protected HashMap<String, HashMap<String, Double>> produceBugLocatorResults() {
+	public HashMap<Integer, HashMap<String, Double>> produceBugLocatorResults() {
 		// produce bug locator results
-		HashMap<String, HashMap<String, Double>> FINALRESULT=new HashMap<String, HashMap<String, Double>>();
+		HashMap<Integer, HashMap<String, Double>> FINALRESULT=new HashMap<Integer, HashMap<String, Double>>();
 		HashMap<String, HashMap<String, Double>> rVSMMapAll = collectRVSMScoreMap();
 		HashMap<String, HashMap<String, Double>> simiMapAll = collectSimiScoreMap();
 		//ArrayList<String> masterResultList = new ArrayList<>();
@@ -109,7 +109,8 @@ public class MasterBLScoreProvider {
 			HashMap<String, Double> rankedResults = getRankedResults(bugReportKey,
 					rVSM, simi);
 			//masterResultList.addAll(rankedResults); 
-			FINALRESULT.put(bugReportKey, rankedResults);
+			int bugId=Integer.valueOf(bugReportKey.substring(0, bugReportKey.length()-4));
+			FINALRESULT.put(bugId, rankedResults);
 		}
 		//String bugLocatorResultFile = "./Data/Results/Bug-Locator-August11-100.txt";
 		//ContentWriter.writeContent(bugLocatorResultFile, masterResultList);
