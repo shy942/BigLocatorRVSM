@@ -10,6 +10,7 @@ import rvsm.calculator.RVSMCalcManager;
 import simi.score.calculator.SimiScoreCalcManager;
 import utility.ContentWriter;
 import utility.ItemSorter;
+import utility.MiscUtility;
 
 public class MasterBLScoreProvider {
 
@@ -24,8 +25,9 @@ public class MasterBLScoreProvider {
 	HashMap<String, HashMap<String, Double>> masterBugReportLogTFMap;
 	HashMap<Integer, ArrayList<String>> goldsetMap;
 	HashMap<String, Double> idfMap;
-	final double ALPHA = 0.2;
-	final int TOPK_SIZE = 10;
+	final double ALPHA = 0.4;
+	final double BETA=0.2;
+	final int TOPK_SIZE = 20;
 
 	public MasterBLScoreProvider(String srcFolder, String bugReportFolder,
 			String goldsetFile) {
@@ -64,7 +66,7 @@ public class MasterBLScoreProvider {
 		return simiManager.collectSimiScoreMap();
 	}
 
-	protected ArrayList<String> getRankedResults(String bugReportKey,
+	protected HashMap<String, Double> getRankedResults(String bugReportKey,
 			HashMap<String, Double> vsmScoreMap,
 			HashMap<String, Double> simiScoreMap) {
 		HashSet<String> candidates = new HashSet<>();
@@ -75,46 +77,53 @@ public class MasterBLScoreProvider {
 		for (String srcFileKey : candidates) {
 			double myScore = 0;
 			if (vsmScoreMap.containsKey(srcFileKey)) {
-				myScore = vsmScoreMap.get(srcFileKey) * (1 - ALPHA);
+				myScore = vsmScoreMap.get(srcFileKey) * ALPHA;
 			}
 			if (simiScoreMap.containsKey(srcFileKey)) {
-				myScore += simiScoreMap.get(srcFileKey) * ALPHA;
+				myScore += simiScoreMap.get(srcFileKey) * BETA;
 			}
 			srcFileScoreMap.put(srcFileKey, myScore);
 		}
 		// now do the sorting
 		List<Map.Entry<String, Double>> sorted = ItemSorter
 				.sortHashMapDouble(srcFileScoreMap);
-		ArrayList<String> rankedResults = new ArrayList<>();
+		HashMap<String, Double> rankedResults = new HashMap<String, Double>();
 		for (Map.Entry<String, Double> entry : sorted) {
-			String line = bugID + "," + entry.getKey() + "," + entry.getValue();
-			rankedResults.add(line);
+			//String line = bugID + "," + entry.getKey() + "," + entry.getValue();
+			rankedResults.put(entry.getKey(), entry.getValue());
 			if (rankedResults.size() == TOPK_SIZE)
 				break;
 		}
 		return rankedResults;
 	}
 
-	protected void produceBugLocatorResults() {
+	protected HashMap<String, HashMap<String, Double>> produceBugLocatorResults() {
 		// produce bug locator results
+		HashMap<String, HashMap<String, Double>> FINALRESULT=new HashMap<String, HashMap<String, Double>>();
 		HashMap<String, HashMap<String, Double>> rVSMMapAll = collectRVSMScoreMap();
 		HashMap<String, HashMap<String, Double>> simiMapAll = collectSimiScoreMap();
-		ArrayList<String> masterResultList = new ArrayList<>();
+		//ArrayList<String> masterResultList = new ArrayList<>();
 		for (String bugReportKey : rVSMMapAll.keySet()) {
 			HashMap<String, Double> rVSM = rVSMMapAll.get(bugReportKey);
 			HashMap<String, Double> simi = simiMapAll.get(bugReportKey);
-			ArrayList<String> rankedResults = getRankedResults(bugReportKey,
+			HashMap<String, Double> rankedResults = getRankedResults(bugReportKey,
 					rVSM, simi);
-			masterResultList.addAll(rankedResults); 
+			//masterResultList.addAll(rankedResults); 
+			FINALRESULT.put(bugReportKey, rankedResults);
 		}
-		String bugLocatorResultFile = "./Data/Results/Bug-Locator-August09-2000.txt";
-		ContentWriter.writeContent(bugLocatorResultFile, masterResultList);
+		//String bugLocatorResultFile = "./Data/Results/Bug-Locator-August11-100.txt";
+		//ContentWriter.writeContent(bugLocatorResultFile, masterResultList);
+		MiscUtility.showResult(10, FINALRESULT);
+		return FINALRESULT;
 	}
+	
+	
+	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		long start = System.currentTimeMillis(); 
-		String bugReportFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedBugData/";
+		String bugReportFolder = "/Users/user/Documents/workspace-2016/QueryReformulation/Data/testsetForBL/test1/";
 		String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedSourceForBL/";
 		String goldsetFile = "./Data/gitInfoNew.txt";
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
