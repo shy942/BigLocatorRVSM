@@ -124,8 +124,12 @@ public class MasterBLScoreProvider {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		long start = System.currentTimeMillis(); 
-		String bugReportFolder = "/Users/user/Documents/workspace-2016/QueryReformulation/Data/testsetForBL/test1/";
-		String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedSourceForBL/";
+		//For mac
+		//String bugReportFolder = "/Users/user/Documents/workspace-2016/QueryReformulation/Data/testsetForBL/test1/";
+		//String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedSourceForBL/";
+		//For Windows
+		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\Data\\testsetForBL\\test1\\";
+		String sourceFolder = "E:\\PhD\\Data\\ProcessedSourceMethodLevel\\";
 		String goldsetFile = "./Data/gitInfoNew.txt";
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
 				.produceBugLocatorResults();
