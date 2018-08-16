@@ -78,10 +78,10 @@ public class MasterBLScoreProvider {
 		for (String srcFileKey : candidates) {
 			double myScore = 0;
 			if (vsmScoreMap.containsKey(srcFileKey)) {
-				myScore = vsmScoreMap.get(srcFileKey) *(1- ALPHA);
+				myScore = vsmScoreMap.get(srcFileKey) *(1-2*ALPHA);
 			}
 			if (simiScoreMap.containsKey(srcFileKey)) {
-				myScore += simiScoreMap.get(srcFileKey) * ALPHA;
+				myScore += simiScoreMap.get(srcFileKey)*ALPHA;
 			}
 			srcFileScoreMap.put(srcFileKey, myScore);
 		}
@@ -129,16 +129,16 @@ public class MasterBLScoreProvider {
 		return rankedResults;
 	}
 	
-	public void produceBugLocatorResults() {
+	public void produceBugLocatorResults(String outputFilePath) {
 		// produce bug locator results
 		HashMap<Integer, HashMap<String, Double>> FINALRESULT=new HashMap<Integer, HashMap<String, Double>>();
 		HashMap<String, HashMap<String, Double>> rVSMMapAll = collectRVSMScoreMap();
 		HashMap<String, HashMap<String, Double>> simiMapAll = collectSimiScoreMap();
 		ArrayList<String> masterResultList = new ArrayList<>();
-		int i=0;
+		//int i=0;
 		for (String bugReportKey : rVSMMapAll.keySet()) {
-			i++;
-			if(i>100)break;
+			//i++;
+			//if(i>100)break;
 			HashMap<String, Double> rVSM = rVSMMapAll.get(bugReportKey);
 			HashMap<String, Double> simi = simiMapAll.get(bugReportKey);
 			ArrayList<String> rankedResults = getRankedResultsInList(bugReportKey,
@@ -147,8 +147,8 @@ public class MasterBLScoreProvider {
 			
 			
 		}
-		String bugLocatorResultFile = "./Data/Results/Bug-Locator-August15-test2.txt";
-		ContentWriter.writeContent(bugLocatorResultFile, masterResultList);
+		
+		ContentWriter.writeContent(outputFilePath, masterResultList);
 		
 	}
 	
@@ -179,16 +179,18 @@ public class MasterBLScoreProvider {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		long start = System.currentTimeMillis(); 
+		int test=9;
 		//For mac
 		//String bugReportFolder = "/Users/user/Documents/workspace-2016/QueryReformulation/Data/testsetForBL/test1/";
 		//String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedSourceForBL/";
 		//For Windows
 		//String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\Data\\testsetForBL\\test1\\";
-		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test2\\";
-		String sourceFolder = "E:\\PhD\\Data\\SourceForBL\\";
+		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test"+test+"\\";
+		String sourceFolder = "E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
 		String goldsetFile = "./Data/gitInfoNew.txt";
+		String outputFilePath="./Data/Results/Bug-Locator-August16-test"+test+".txt";
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
-				.produceBugLocatorResults();
+				.produceBugLocatorResults(outputFilePath);
 		long end = System.currentTimeMillis();
 		System.out.println("Time elapsed: " + (end - start) / 1000 + " s");
 	}
