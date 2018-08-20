@@ -27,7 +27,7 @@ public class MasterBLScoreProvider {
 	HashMap<Integer, ArrayList<String>> goldsetMap;
 	HashMap<String, Double> idfMap;
 	
-	final int TOPK_SIZE = 10;
+	//final int TOPK_SIZE = 10;
 
 	public MasterBLScoreProvider(String srcFolder, String bugReportFolder,
 			String goldsetFile) {
@@ -68,7 +68,7 @@ public class MasterBLScoreProvider {
 
 	protected HashMap<String, Double> getRankedResults(String bugReportKey,
 			HashMap<String, Double> vsmScoreMap,
-			HashMap<String, Double> simiScoreMap, double ALPHA, double BETA) {
+			HashMap<String, Double> simiScoreMap, double ALPHA, double BETA, int TOPK_SIZE) {
 		HashSet<String> candidates = new HashSet<>();
 		candidates.addAll(vsmScoreMap.keySet());
 		candidates.addAll(simiScoreMap.keySet());
@@ -99,7 +99,7 @@ public class MasterBLScoreProvider {
 
 	protected ArrayList<String> getRankedResultsInList(String bugReportKey,
 			HashMap<String, Double> vsmScoreMap,
-			HashMap<String, Double> simiScoreMap, double ALPHA, double BETA) {
+			HashMap<String, Double> simiScoreMap, double ALPHA, double BETA, int TOPK_SIZE) {
 		HashSet<String> candidates = new HashSet<>();
 		candidates.addAll(vsmScoreMap.keySet());
 		candidates.addAll(simiScoreMap.keySet());
@@ -128,7 +128,7 @@ public class MasterBLScoreProvider {
 		return rankedResults;
 	}
 	
-	public void produceBugLocatorResults(String outputFilePath, double ALPHA, double BETA) {
+	public void produceBugLocatorResults(String outputFilePath, double ALPHA, double BETA, int TOPK_SIZE) {
 		// produce bug locator results
 		HashMap<Integer, HashMap<String, Double>> FINALRESULT=new HashMap<Integer, HashMap<String, Double>>();
 		HashMap<String, HashMap<String, Double>> rVSMMapAll = collectRVSMScoreMap();
@@ -141,7 +141,7 @@ public class MasterBLScoreProvider {
 			HashMap<String, Double> rVSM = rVSMMapAll.get(bugReportKey);
 			HashMap<String, Double> simi = simiMapAll.get(bugReportKey);
 			ArrayList<String> rankedResults = getRankedResultsInList(bugReportKey,
-					rVSM, simi, ALPHA, BETA);
+					rVSM, simi, ALPHA, BETA, TOPK_SIZE);
 			masterResultList.addAll(rankedResults); 
 			
 			
@@ -151,7 +151,7 @@ public class MasterBLScoreProvider {
 		
 	}
 	
-	public HashMap<Integer, HashMap<String, Double>> produceBugLocatorResultsForMyTool(double ALPHA, double BETA) {
+	public HashMap<Integer, HashMap<String, Double>> produceBugLocatorResultsForMyTool(double ALPHA, double BETA, int TOPK_SIZE) {
 		// produce bug locator results
 		HashMap<Integer, HashMap<String, Double>> FINALRESULT=new HashMap<Integer, HashMap<String, Double>>();
 		HashMap<String, HashMap<String, Double>> rVSMMapAll = collectRVSMScoreMap();
@@ -163,7 +163,7 @@ public class MasterBLScoreProvider {
 			HashMap<String, Double> rVSM = rVSMMapAll.get(bugReportKey);
 			HashMap<String, Double> simi = simiMapAll.get(bugReportKey);
 			HashMap<String, Double> rankedResults = getRankedResults(bugReportKey,
-					rVSM, simi, ALPHA, BETA);
+					rVSM, simi, ALPHA, BETA, TOPK_SIZE);
 			 
 			int bugId=Integer.valueOf(bugReportKey.substring(0, bugReportKey.length()-4));
 			FINALRESULT.put(bugId, rankedResults);
@@ -187,11 +187,12 @@ public class MasterBLScoreProvider {
 		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test"+test+"\\";
 		String sourceFolder = "E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
 		String goldsetFile = "./Data/gitInfoNew.txt";
-		String outputFilePath="./Data/Results/Bug-Locator-August16-test"+test+".txt";
+		String outputFilePath="./Data/Results/Bug-Locator-August18-test"+test+".txt";
 		double ALPHA=0.8;
 		double BETA=0.2;
+		int TOPK_SIZE = 10;
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
-				.produceBugLocatorResults(outputFilePath, ALPHA, BETA);
+				.produceBugLocatorResults(outputFilePath, ALPHA, BETA, TOPK_SIZE);
 		long end = System.currentTimeMillis();
 		System.out.println("Time elapsed: " + (end - start) / 1000 + " s");
 	}
