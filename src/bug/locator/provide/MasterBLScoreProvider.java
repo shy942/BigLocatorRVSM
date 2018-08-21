@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import rvsm.calculator.RVSMCalcManager;
 import simi.score.calculator.SimiScoreCalcManager;
@@ -85,8 +86,10 @@ public class MasterBLScoreProvider {
 			srcFileScoreMap.put(srcFileKey, myScore);
 		}
 		// now do the sorting
-		List<Map.Entry<String, Double>> sorted = ItemSorter
-				.sortHashMapDouble(srcFileScoreMap);
+		List<Map.Entry<String, Double>> sorted 
+		=(List<Entry<String, Double>>) MiscUtility.sortByValues(srcFileScoreMap);
+		//= ItemSorter
+			//	.sortHashMapDouble(srcFileScoreMap);
 		HashMap<String, Double> rankedResults = new HashMap<String, Double>();
 		for (Map.Entry<String, Double> entry : sorted) {
 			//String line = bugID + "," + entry.getKey() + "," + entry.getValue();
@@ -178,16 +181,16 @@ public class MasterBLScoreProvider {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		long start = System.currentTimeMillis(); 
-		int test=9;
+		int test=10;
 		//For mac
 		//String bugReportFolder = "/Users/user/Documents/workspace-2016/QueryReformulation/Data/testsetForBL/test1/";
 		//String sourceFolder = "/Users/user/Documents/Ph.D/2018/Data/ProcessedSourceForBL/";
 		//For Windows
-		//String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\Data\\testsetForBL\\test1\\";
+		//String bugReportFolder = "E:\\PhD\\Data\\testsetForBLprocessedData\\test"+test+"\\";
 		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test"+test+"\\";
 		String sourceFolder = "E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
 		String goldsetFile = "./Data/gitInfoNew.txt";
-		String outputFilePath="./Data/Results/Bug-Locator-August18-test"+test+".txt";
+		String outputFilePath="./Data/Results/Bug-Locator-August20-test"+test+".txt";
 		double ALPHA=0.8;
 		double BETA=0.2;
 		int TOPK_SIZE = 10;

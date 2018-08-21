@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import stemmer.Stemmer;
+import org.tartarus.snowball.*;
+import org.tartarus.snowball.ext.englishStemmer;
+
+
 
 import utility.ContentLoader;
 import utility.ContentWriter;
@@ -15,14 +18,14 @@ public class BugReportPreprocessor {
 
 	String inputFolder;
 	ArrayList<String> stopwords;
-	Stemmer stemmer;
+	
 
 	public BugReportPreprocessor(String inputFolder) {
 		this.inputFolder = inputFolder;
-		this.stopwords = new ArrayList<String>();
-		this.loadStopWords();
-		this.stemmer = new Stemmer();
-		this.loadStopWords();
+		
+		
+		
+	
 	}
 
 	protected void loadStopWords() {
@@ -64,16 +67,23 @@ public class BugReportPreprocessor {
 	}
 
 	protected String performStemming(String word) {
-		return stemmer.stripAffixes(word);
-		//return word;
+		
+			SnowballStemmer snowballStemmer = new englishStemmer();
+		    snowballStemmer.setCurrent(word);
+		    snowballStemmer.stem();
+		    String result = snowballStemmer.getCurrent();
+
+		    return result;
 	}
 
 	public String performNLP(String content) {
 		// performing NLP operations
 		ArrayList<String> words = splitContent(content);
-		ArrayList<String> refined = removeStopWords(words);
+		//Already done
+		//ArrayList<String> refined = removeStopWords(words);
+		SnowballStemmer snowballStemmer = new englishStemmer();
 		ArrayList<String> stemmed = new ArrayList<String>();
-		for (String word : refined) {
+		for (String word : words) {
 			if (!word.trim().isEmpty()) {
 				String stemmedWord = performStemming(word.trim());
 				if (stemmedWord.length() >= 3) {
@@ -100,10 +110,10 @@ public class BugReportPreprocessor {
 				.getAbsolutePath());
 			
 			System.out.println(filecontent);
-			String afterStopWordRemoval=this.StopWordRemover(filecontent);
-			System.out.println(afterStopWordRemoval);
+			//String afterStopWordRemoval=this.StopWordRemover(filecontent);
+			//System.out.println(afterStopWordRemoval);
 			
-			String ProcessedContent=this.performNLP(afterStopWordRemoval);
+			String ProcessedContent=this.performNLP(filecontent);
 			System.out.println(ProcessedContent);
 			
 			ContentWriter.writeContent(outputFolder+f.getName(), ProcessedContent);
@@ -113,8 +123,8 @@ public class BugReportPreprocessor {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String inputFolder="/Users/user/Documents/Ph.D/2018/Data/BugData/";
-		String outputFolder="/Users/user/Documents/Ph.D/2018/Data/ProcessedBugData/";
+		String inputFolder="E:\\PhD\\Data\\BugDataNew\\";
+		String outputFolder="E:\\PhD\\Data\\ProcessedBugDataSnowballStem\\";
 		BugReportPreprocessor obj=new BugReportPreprocessor(inputFolder);
 		obj.PerformStemming(outputFolder); 
 	}

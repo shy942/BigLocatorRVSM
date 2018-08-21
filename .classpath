@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="src/lib/lucene-queryparser-5.5.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/diffutils-1.2.1.jar"/>
 	<classpathentry kind="lib" path="src/lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
+	<classpathentry kind="lib" path="src/lib/snowball-stemmer-1.3.0.581.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
