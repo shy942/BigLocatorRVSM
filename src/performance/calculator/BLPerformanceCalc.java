@@ -309,13 +309,13 @@ public class BLPerformanceCalc {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		int TOPK = 5;
+		int TOPK = 10;
 
 		//String resultFile = "./Data/Results/eclipseoutput.txt"; 
-		String resultFile = "./data/Results/Bug-Locator-August20-test10.txt";
+		String resultFile = "./data/Results/Bug-Locator-August27-test10.txt";
 		//String resultFile = "./data/Results/finalResultAug16Test9.txt";
 		String goldFile = "./Data/gitInfoNew.txt";
-		BLPerformanceCalc bcalc = new BLPerformanceCalc(resultFile, TOPK,
+		BLPerformanceCalc bcalc = new BLPerformanceCalc(resultFile, 5,
 				goldFile);
 
 		double topkAcc = bcalc.getTopKAccOwn(); 

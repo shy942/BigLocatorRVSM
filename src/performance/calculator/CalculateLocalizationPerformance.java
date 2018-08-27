@@ -35,19 +35,20 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./Data/gitInfoNew.txt","./Data/Results/Bug-Locator-August02.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./Data/gitInfoNew.txt","./Data/Results/Bug-Locator-August27-test9.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
-		MiscUtility.showResult(10, obj.gitResults);
+		//MiscUtility.showResult(10, obj.gitResults);
 		System.out.println();
 		obj.ActualResultSets=obj.RetrieveFinalSets(obj.actualSetPath); 	
-	    MiscUtility.showResult(10, obj.ActualResultSets);
-		
+		//MiscUtility.showResult(10, obj.ActualResultSets);
+		System.out.println(obj.gitResults.size());
+		System.out.println(obj.ActualResultSets.size());
 		//Compute TopK percentage
 		HashMap<String, ArrayList<String>>finalRankedResult=obj.ComputePerformancePercent(10,obj);
 		MiscUtility.showResult(100, finalRankedResult);
 		
 		//Compute MAP
-		obj.ComputeMAP(finalRankedResult,obj); 
+		obj.ComputeMAPtopK(finalRankedResult,obj,10); 
 		//Comupte MRR
 		obj.ComputeMRR(finalRankedResult, obj);
 	}
@@ -60,13 +61,14 @@ public class CalculateLocalizationPerformance {
 			Double Prec=0.0;
 			ArrayList<String> rankedList=finalRankedResult.get(bugID);
 			int count=0;
+			Double AP=0.0;
 			for(String rankstr:rankedList)
 			{
 				int rank=Integer.valueOf(rankstr);
 				count++;
 				Prec+=Double.valueOf(count)/Double.valueOf(rank);
 			}
-			Double AP=Prec/rankedList.size();
+			if(count>0) AP=Prec/count;
 			//System.out.println("AP: "+AP);
 			SumAP+=AP;
 		}

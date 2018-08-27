@@ -195,7 +195,7 @@ public class MasterBLScoreProvider {
 		double BETA=0.2;
 		int TOPK_SIZE = 10;
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
-				.produceBugLocatorResultsForMyTool( ALPHA, BETA, TOPK_SIZE);
+				.produceBugLocatorResults(outputFilePath, ALPHA, BETA, TOPK_SIZE);
 		long end = System.currentTimeMillis();
 		System.out.println("Time elapsed: " + (end - start) / 1000 + " s");
 	}

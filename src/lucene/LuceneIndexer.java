@@ -58,7 +58,7 @@ public class LuceneIndexer {
 		for (File file : files) {
 			Document doc = new Document();
 
-			String path = file.getCanonicalPath();
+			String path = file.getName();
 
 			indexWriter.addDocument(doc);
 
@@ -68,6 +68,7 @@ public class LuceneIndexer {
 			FileReader fr = new FileReader(file);
 			
 			doc.add(new TextField("contents", fr));
+			doc.add(new StringField("path", path, Field.Store.YES));
 			//doc.add(new StringField("path", file.getPath(), Field.Store.YES));
 			//doc.add(new StringField("filename", file.getName(), Field.Store.YES));
 
@@ -92,24 +93,26 @@ public class LuceneIndexer {
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			
-
+			int hitsPerPage = 5;
 			QueryParser qp = new QueryParser("contents",
 					analyzer);
 			Query query = qp.parse(searchString); // parse the query and construct the Query object
-
-			TopDocs hits = searcher.search(query, 10); // run the query
-			System.out.println("Found: " + hits.totalHits);
+			TopDocs docs = searcher.search(query, hitsPerPage);
+			ScoreDoc[] hits = docs.scoreDocs;// run the query
+			System.out.println("Found: " + hits.length);
 			
-            int i=0;
-			for(ScoreDoc scoreDoc:hits.scoreDocs)
+          
+            for(int i=0;i<hits.length;++i) {
 			{
-				Document doc=searcher.doc(scoreDoc.doc);
-				System.out.println(++i+" : "+doc.get("path"));
+				ScoreDoc item = hits[i];
+	        	Document doc = searcher.doc(item.doc);
+	        	double score=item.score;
+	        	System.out.println((i + 1) + ". " + doc.get("path") + "\t"+score);
 			}
 		
-			indexReader.close(); 
 			
-			
+            }
+            indexReader.close(); 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -120,9 +123,10 @@ public class LuceneIndexer {
 		
 		
 		String indexFolder="./Data/Index";
-		String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		new LuceneIndexer(docFolder, indexFolder).createIndex();
-		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind");
+		//String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
+		String docFolder="E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
+		//new LuceneIndexer(docFolder, indexFolder).createIndex();
+		new LuceneIndexer(docFolder, indexFolder).searchIndex("bind");
 		
 	}
 
