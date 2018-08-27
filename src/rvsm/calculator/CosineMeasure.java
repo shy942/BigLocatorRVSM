@@ -1,5 +1,7 @@
 package rvsm.calculator;
 
+import java.util.ArrayList;
+
 public class CosineMeasure {
 
 	public static double getCosineSimilarity(int[] list1, int[] list2) {
@@ -16,6 +18,26 @@ public class CosineMeasure {
 		return cosmeasure;
 	}
 
+	
+	
+	public static double getCosineSimilarity(ArrayList<Integer> list1, ArrayList<Integer> list2) {
+		double cosmeasure = 0;
+		int[] listArray1 = new int[20000];
+		int[] listArray2 = new int[20000];
+		for(int i=0;i<list1.size();i++)
+		{
+			int item=list1.get(i);
+			listArray1[i]=item;
+		}
+		for(int i=0;i<list2.size();i++)
+		{
+			int item=list2.get(i);
+			listArray1[i]=item;
+		}
+		cosmeasure=getCosineSimilarity(listArray1, listArray2);
+		return cosmeasure;
+	}
+	
 	protected static double getMode(int[] list) {
 		double sum = 0;
 		for (int i : list) {

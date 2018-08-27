@@ -86,14 +86,14 @@ public class MasterBLScoreProvider {
 			srcFileScoreMap.put(srcFileKey, myScore);
 		}
 		// now do the sorting
-		List<Map.Entry<String, Double>> sorted 
-		=(List<Entry<String, Double>>) MiscUtility.sortByValues(srcFileScoreMap);
+		HashMap<String, Double> sorted = MiscUtility.sortByValues(srcFileScoreMap);
+		//=(List<Entry<String, Double>>) MiscUtility.sortByValues(srcFileScoreMap);
 		//= ItemSorter
 			//	.sortHashMapDouble(srcFileScoreMap);
 		HashMap<String, Double> rankedResults = new HashMap<String, Double>();
-		for (Map.Entry<String, Double> entry : sorted) {
+		for (String key : sorted.keySet()) {
 			//String line = bugID + "," + entry.getKey() + "," + entry.getValue();
-			rankedResults.put(entry.getKey(), entry.getValue());
+			rankedResults.put(key, sorted.get(key));
 			if (rankedResults.size() == TOPK_SIZE)
 				break;
 		}
@@ -190,12 +190,12 @@ public class MasterBLScoreProvider {
 		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test"+test+"\\";
 		String sourceFolder = "E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
 		String goldsetFile = "./Data/gitInfoNew.txt";
-		String outputFilePath="./Data/Results/Bug-Locator-August20-test"+test+".txt";
+		String outputFilePath="./Data/Results/Bug-Locator-August27-test"+test+".txt";
 		double ALPHA=0.8;
 		double BETA=0.2;
 		int TOPK_SIZE = 10;
 		new MasterBLScoreProvider(sourceFolder, bugReportFolder, goldsetFile)
-				.produceBugLocatorResults(outputFilePath, ALPHA, BETA, TOPK_SIZE);
+				.produceBugLocatorResultsForMyTool( ALPHA, BETA, TOPK_SIZE);
 		long end = System.currentTimeMillis();
 		System.out.println("Time elapsed: " + (end - start) / 1000 + " s");
 	}
