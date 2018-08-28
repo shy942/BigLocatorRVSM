@@ -35,7 +35,7 @@ public class CalculateLocalizationPerformance {
 		// TODO Auto-generated method stub
 		
 		
-		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./Data/gitInfoNew.txt","./Data/Results/Bug-Locator-August27-test9.txt");		
+		CalculateLocalizationPerformance obj=new CalculateLocalizationPerformance("./Data/gitInfoNew.txt","./Data/Results/Bug-Locator-August27-test10.txt");		
 		obj.gitResults=obj.RetrieveTrueSetsType2(obj.gitPath);
 		//MiscUtility.showResult(10, obj.gitResults);
 		System.out.println();
@@ -44,11 +44,11 @@ public class CalculateLocalizationPerformance {
 		System.out.println(obj.gitResults.size());
 		System.out.println(obj.ActualResultSets.size());
 		//Compute TopK percentage
-		HashMap<String, ArrayList<String>>finalRankedResult=obj.ComputePerformancePercent(10,obj);
+		HashMap<String, ArrayList<String>>finalRankedResult=obj.ComputePerformancePercent(5,obj);
 		MiscUtility.showResult(100, finalRankedResult);
 		
 		//Compute MAP
-		obj.ComputeMAPtopK(finalRankedResult,obj,10); 
+		obj.ComputeMAPtopK(finalRankedResult,obj,5); 
 		//Comupte MRR
 		obj.ComputeMRR(finalRankedResult, obj);
 	}
