@@ -84,7 +84,7 @@ public class BugLocatorLuceneBased {
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			
-			int hitsPerPage = 10;
+			int hitsPerPage = 100;
 			QueryParser qp = new QueryParser("contents",
 					analyzer);
 			Query query = qp.parse(searchString); // parse the query and construct the Query object
