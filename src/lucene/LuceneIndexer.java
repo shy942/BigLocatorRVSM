@@ -93,7 +93,7 @@ public class LuceneIndexer {
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			
-			int hitsPerPage = 5;
+			int hitsPerPage = 200;
 			QueryParser qp = new QueryParser("contents",
 					analyzer);
 			Query query = qp.parse(searchString); // parse the query and construct the Query object
@@ -126,7 +126,7 @@ public class LuceneIndexer {
 		//String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
 		String docFolder="E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
 		//new LuceneIndexer(docFolder, indexFolder).createIndex();
-		new LuceneIndexer(docFolder, indexFolder).searchIndex("bind");
+		new LuceneIndexer(docFolder, indexFolder).searchIndex("bind perform object");
 		
 	}
 
