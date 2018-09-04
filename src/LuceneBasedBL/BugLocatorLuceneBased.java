@@ -17,6 +17,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
 import utility.ContentLoader;
+import utility.ContentWriter;
 import utility.MiscUtility;
 
 public class BugLocatorLuceneBased {
@@ -32,8 +33,12 @@ public class BugLocatorLuceneBased {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String indexDir="./Data/Index";
-		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test10";
-		new BugLocatorLuceneBased(indexDir, bugReportFolder).getLuceneBasedScore(0.8);
+		//String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test10";
+		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForVSM";
+		BugLocatorLuceneBased obj=new BugLocatorLuceneBased(indexDir,bugReportFolder);
+		HashMap<Integer, HashMap<String, Double>>finalResultHM=obj.getLuceneBasedScore(1.0);
+		obj.writeFinalResult(finalResultHM, "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\Results\\Sep3VSMall.txt");
+		
 	}
 
 	public HashMap<Integer, HashMap<String, Double>> getLuceneBasedScore(Double ALPHA)
@@ -49,7 +54,7 @@ public class BugLocatorLuceneBased {
 			String queryContent=MiscUtility.list2Str(content);
 			//System.out.println(queryContent);
 			HashMap<String, Double> resultPerQuery=searchIndex(queryContent, ALPHA);
-			MiscUtility.showResult(10, resultPerQuery);
+			//MiscUtility.showResult(10, resultPerQuery);
 			finalResult.put(queryID, resultPerQuery);
 		}
 		
@@ -57,7 +62,28 @@ public class BugLocatorLuceneBased {
 		return finalResult;
 	}
 	
-	
+	protected static void writeFinalResult(HashMap<Integer, HashMap<String, Double>>finalResultHM, String outFile)
+	{
+		
+		HashMap<String, Double> hm=new HashMap<>();
+		ArrayList<String> list=new ArrayList<>();
+ 		int count=0;
+		for(int key:finalResultHM.keySet())
+		{
+			
+			hm=finalResultHM.get(key);
+			count=0;
+			for(String sid:hm.keySet())
+			{
+				count++;
+				if(count>10)break; 
+				list.add(key+","+sid+","+hm.get(sid));
+			}
+		}
+		
+		ContentWriter.writeContent(outFile, list);
+		
+	}
 	protected static HashMap<String, ArrayList<String>> getBugReportContentMap(
 			String bugReportFolder) {
 		File[] files = new File(bugReportFolder).listFiles();
@@ -96,7 +122,7 @@ public class BugLocatorLuceneBased {
 				ScoreDoc item = hits[i];
 	        	Document doc = searcher.doc(item.doc);
 	        	double score=item.score;
-	        	System.out.println((i + 1) + ". " + doc.get("path") + "\t"+score);
+	        	//System.out.println((i + 1) + ". " + doc.get("path") + "\t"+score);
 	        	resultMap.put(doc.get("path"), score);
 			}
 		
