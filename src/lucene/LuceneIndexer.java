@@ -125,8 +125,8 @@ public class LuceneIndexer {
 		String indexFolder="./Data/Index";
 		//String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
 		String docFolder="E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
-		//new LuceneIndexer(docFolder, indexFolder).createIndex();
-		new LuceneIndexer(docFolder, indexFolder).searchIndex("bind perform object");
+		new LuceneIndexer(docFolder, indexFolder).createIndex();
+		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind perform object");
 		
 	}
 
