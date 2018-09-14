@@ -309,7 +309,7 @@ public class BLPerformanceCalcRankedResult {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		int TOPK = 5;
+		int TOPK = 10;
 
 		String resultFile="./Data/Results/eclipseoutput.txt";
 		//String resultFile = "./data/Results/Bug-Locator-August02.txt";
