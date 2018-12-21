@@ -120,11 +120,11 @@ public class LuceneIndexer {
 
 	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException {
 		// TODO Auto-generated method stub
-		
-		
-		String indexFolder="./Data/Index";
+		String corpus="SWT";
+		String base="E:\\PhD\\Repo\\"+corpus+"\\";
+		String indexFolder=base+"\\data\\Index"+corpus;
 		//String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		String docFolder="E:\\PhD\\Data\\NotProcessedSourceMethodLevel\\";
+		String docFolder=base+"\\methodDec21\\";
 		new LuceneIndexer(docFolder, indexFolder).createIndex();
 		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind perform object");
 		

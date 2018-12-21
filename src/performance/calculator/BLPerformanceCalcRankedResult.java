@@ -311,9 +311,9 @@ public class BLPerformanceCalcRankedResult {
 
 		int TOPK = 10;
 
-		String resultFile="./Data/Results/eclipseoutput.txt";
+		String resultFile="E:\\BugLocator\\output\\SWToutput.txt";
 		//String resultFile = "./data/Results/Bug-Locator-August02.txt";
-		String goldFile = "./Data/gitInfoNew.txt"; 
+		String goldFile = "E:\\PhD\\Repo\\SWT\\gitInfoSWT.txt"; 
 		BLPerformanceCalcRankedResult bcalc = new BLPerformanceCalcRankedResult(resultFile, TOPK,
 				goldFile);
 		double topk = bcalc.getTopKAccOwn();
