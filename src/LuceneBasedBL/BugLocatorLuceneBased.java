@@ -32,15 +32,36 @@ public class BugLocatorLuceneBased {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String indexDir="./Data/Index";
+		String indexDir="E:\\PhD\\Repo\\SWT\\data\\IndexSWT\\";
 		//String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForBL\\test10";
-		String bugReportFolder = "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\testsetForVSM";
+		String bugReportFolder = "E:\\PhD\\Repo\\SWT\\data\\testsetForBL\\test1";
 		BugLocatorLuceneBased obj=new BugLocatorLuceneBased(indexDir,bugReportFolder);
 		HashMap<Integer, HashMap<String, Double>>finalResultHM=obj.getLuceneBasedScore(1.0);
-		obj.writeFinalResult(finalResultHM, "C:\\Users\\Mukta\\Workspace-2018\\QueryReformulation\\data\\Results\\Sep3VSMall.txt");
+		//System.out.println(finalResultHM);
+		obj.writeFinalResult(finalResultHM, "E:\\PhD\\Repo\\SWT\\data\\Results\\test.txt");
 		
 	}
-
+    public HashMap<Integer, HashMap<String, Double>> getLuceneBasedScore()
+    {
+        HashMap<Integer, HashMap<String, Double>>finalResult=new HashMap<>();
+        HashMap<String, ArrayList<String>> docMap=getBugReportContentMap(this.bugReportFolder);
+        
+        for(String bugID: docMap.keySet())
+        {
+            int queryID=Integer.valueOf(bugID.substring(0,bugID.length()-4));
+            ArrayList<String> content=docMap.get(bugID);
+            //System.out.println(bugID);
+            String queryContent=MiscUtility.list2Str(content);
+            //System.out.println(queryContent);
+            HashMap<String, Double> resultPerQuery=searchIndex(queryContent, 1.0);
+            //System.out.println(resultPerQuery.size());
+            //MiscUtility.showResult(90, resultPerQuery);
+            finalResult.put(queryID, resultPerQuery);
+        }
+        
+        
+        return finalResult;
+    }
 	public HashMap<Integer, HashMap<String, Double>> getLuceneBasedScore(Double ALPHA)
 	{
 		HashMap<Integer, HashMap<String, Double>>finalResult=new HashMap<>();
@@ -50,11 +71,12 @@ public class BugLocatorLuceneBased {
 		{
 			int queryID=Integer.valueOf(bugID.substring(0,bugID.length()-4));
 			ArrayList<String> content=docMap.get(bugID);
-			System.out.println(bugID);
+			//System.out.println(bugID);
 			String queryContent=MiscUtility.list2Str(content);
 			//System.out.println(queryContent);
 			HashMap<String, Double> resultPerQuery=searchIndex(queryContent, ALPHA);
-			//MiscUtility.showResult(10, resultPerQuery);
+			//System.out.println(resultPerQuery.size());
+			//MiscUtility.showResult(90, resultPerQuery);
 			finalResult.put(queryID, resultPerQuery);
 		}
 		
@@ -97,20 +119,20 @@ public class BugLocatorLuceneBased {
 		return docMap;
 	}
 	
-	public static HashMap<String, Double> searchIndex(String searchString, double ALPHA) {
+	public HashMap<String, Double> searchIndex(String searchString, double ALPHA) {
 
 		HashMap<String, Double> resultMap=new HashMap<>();
 
 		try {
 			Analyzer analyzer = new StandardAnalyzer();
-			FSDirectory dir = FSDirectory.open(new File(indexDir).toPath());
-
+			FSDirectory dir = FSDirectory.open(new File(this.indexDir).toPath());
+            System.out.println(searchString);
 			IndexReader indexReader;
 			indexReader=DirectoryReader.open(dir);
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			
-			int hitsPerPage = 100;
+			int hitsPerPage = 10000;
 			QueryParser qp = new QueryParser("contents",
 					analyzer);
 			Query query = qp.parse(searchString); // parse the query and construct the Query object

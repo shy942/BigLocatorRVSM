@@ -3,6 +3,7 @@ package lucene;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
@@ -29,16 +30,22 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version; 
 import org.apache.lucene.util.packed.PackedInts.Reader;
 
+import utility.ContentWriter;
+
 
 
 public class LuceneIndexer {
 
 	static String indexDir;
 	String docsDir;
-
-	public LuceneIndexer(String docFolder, String indexFolder) {
+	String corpus;
+	String base;
+	
+	public LuceneIndexer(String docFolder, String indexFolder, String corpus, String base) {
 		this.docsDir = docFolder;
 		this.indexDir = indexFolder;
+		this.corpus=corpus;
+		this.base=base;
 	}
 
 	public void createIndex() throws CorruptIndexException,
@@ -46,7 +53,7 @@ public class LuceneIndexer {
 
 		String FIELD_PATH = "path";
 		String FIELD_CONTENTS = "contents";
-
+        ArrayList<String> fileList=new ArrayList<>();
 		Analyzer analyzer = new StandardAnalyzer();
 		boolean recreateIndexIfExists = true;
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -74,10 +81,13 @@ public class LuceneIndexer {
 
 			indexWriter.addDocument(doc);
 			System.out.println("Added: " + file.getName());
+			fileList.add(file.getName());
 
 		}
 
 		indexWriter.close();
+		
+		ContentWriter.writeContent(this.base+"\\data\\allFilesName.txt", fileList);
 	}
 	
 	public static void searchIndex(String searchString) {
@@ -120,12 +130,16 @@ public class LuceneIndexer {
 
 	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException {
 		// TODO Auto-generated method stub
-		String corpus="SWT";
-		String base="E:\\PhD\\Repo\\"+corpus+"\\";
-		String indexFolder=base+"\\data\\Index"+corpus;
+		String corpus="Apache";
+	    String project="HBASE";
+        String version="1_2_4";
+        String base= "E:\\PhD\\Repo\\"+corpus+"\\"+project+"\\"+version;
+        String indexFolder=base+"\\data\\Index"+corpus+project+version;
+        //String base="E:\\PhD\\Repo\\"+corpus+"\\";
+		//String indexFolder=base+"\\data\\Index"+corpus;
 		//String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		String docFolder=base+"\\methodDec21\\";
-		new LuceneIndexer(docFolder, indexFolder).createIndex();
+		String docFolder=base+"\\ProcessedSourceCorpusJuly2019\\";
+		new LuceneIndexer(docFolder, indexFolder, corpus, base).createIndex();
 		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind perform object");
 		
 	}

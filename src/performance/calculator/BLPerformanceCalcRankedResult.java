@@ -169,7 +169,7 @@ public class BLPerformanceCalcRankedResult {
 					String key = bugID + "-" + rFile;
 					if (rankMap.containsKey(key)) {
 						int rank = rankMap.get(key);
-						if (rank > 0  && rank <= 10) {
+						if (rank > 0  && rank < 10) {
 							if (checkEntryFound(goldFiles, rFile)) {
 								found++;
 								// System.out.println(bugID+"\t"+key+"\t"+rank);
@@ -311,9 +311,9 @@ public class BLPerformanceCalcRankedResult {
 
 		int TOPK = 10;
 
-		String resultFile="E:\\BugLocator\\output\\SWToutput.txt";
+		String resultFile="E:\\PhD\\Repo\\Apache\\OthersResult\\BugLocator\\output_output.txt";
 		//String resultFile = "./data/Results/Bug-Locator-August02.txt";
-		String goldFile = "E:\\PhD\\Repo\\SWT\\gitInfoSWT.txt"; 
+		String goldFile = "E:\\PhD\\Repo\\Apache\\data\\gitInfoApache.txt"; 
 		BLPerformanceCalcRankedResult bcalc = new BLPerformanceCalcRankedResult(resultFile, TOPK,
 				goldFile);
 		double topk = bcalc.getTopKAccOwn();
