@@ -130,15 +130,15 @@ public class LuceneIndexer {
 
 	public static void main(String[] args) throws CorruptIndexException, LockObtainFailedException, IOException {
 		// TODO Auto-generated method stub
-		String corpus="Apache";
-	    String project="HBASE";
-        String version="1_2_4";
-        String base= "E:\\PhD\\Repo\\"+corpus+"\\"+project+"\\"+version;
-        String indexFolder=base+"\\data\\Index"+corpus+project+version;
-        //String base="E:\\PhD\\Repo\\"+corpus+"\\";
-		//String indexFolder=base+"\\data\\Index"+corpus;
+		String corpus="Eclipse";
+	    //String project="ROO";
+        //String version="1_1_0";
+        //String base= "E:\\PhD\\Repo\\"+corpus+"\\"+project+"\\"+version;
+        //String indexFolder=base+"\\data\\Index"+corpus+project+version;
+        String base="E:\\PhD\\Repo\\"+corpus+"\\";
+		String indexFolder=base+"\\data\\Index"+corpus;
 		//String docFolder="/Users/user/Documents/Ph.D/2018/Data/SourceForBL/";
-		String docFolder=base+"\\ProcessedSourceCorpusJuly2019\\";
+		String docFolder=base+"\\ProcessedSourceCorpus3\\";
 		new LuceneIndexer(docFolder, indexFolder, corpus, base).createIndex();
 		//new LuceneIndexer(docFolder, indexFolder).searchIndex("bind perform object");
 		

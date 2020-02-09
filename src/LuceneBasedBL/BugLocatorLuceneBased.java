@@ -50,7 +50,7 @@ public class BugLocatorLuceneBased {
         {
             int queryID=Integer.valueOf(bugID.substring(0,bugID.length()-4));
             ArrayList<String> content=docMap.get(bugID);
-            //System.out.println(bugID);
+            System.out.println(bugID);
             String queryContent=MiscUtility.list2Str(content);
             //System.out.println(queryContent);
             HashMap<String, Double> resultPerQuery=searchIndex(queryContent, 1.0);
@@ -132,7 +132,7 @@ public class BugLocatorLuceneBased {
 			IndexSearcher searcher = new IndexSearcher(indexReader);
 
 			
-			int hitsPerPage = 10000;
+			int hitsPerPage = 1000;
 			QueryParser qp = new QueryParser("contents",
 					analyzer);
 			Query query = qp.parse(searchString); // parse the query and construct the Query object
@@ -144,7 +144,7 @@ public class BugLocatorLuceneBased {
 				ScoreDoc item = hits[i];
 	        	Document doc = searcher.doc(item.doc);
 	        	double score=item.score;
-	        	//System.out.println((i + 1) + ". " + doc.get("path") + "\t"+score);
+	        	System.out.println((i + 1) + ". " + doc.get("path") + "\t"+score);
 	        	resultMap.put(doc.get("path"), score);
 			}
 		
